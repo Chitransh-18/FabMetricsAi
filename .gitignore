@@ -1,0 +1,21 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.conda/
+env/
+venv/
+ENV/
+wafer_env/
+
+# Large Model Weights (Keep the repo lightweight)
+*.pth
+*.pkl
+*.h5
+
+# Operating System Files
+Thumbs.db
+ehthumbs.db
+.DS_Store
