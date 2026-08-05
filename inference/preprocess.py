@@ -100,3 +100,39 @@ def wafer_map_preview(wafer_map: np.ndarray) -> List[List[int]]:
     """Return a compact integer grid for frontend visualization."""
     preview = np.asarray(wafer_map, dtype=np.int32)
     return preview.tolist()
+
+
+def localize_defects(image_bytes: bytes) -> tuple[str, int, int]:
+    """
+    Isolate silicon boundary space with binary masks and draw defect markers.
+    Returns (base64_encoded_png, width, height).
+    """
+    import cv2
+    import base64
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    if img is None:
+        raise ValueError("Substrate image decoding failure.")
+    
+    height, width, _ = img.shape
+    annotated_img = img.copy()
+    
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+    _, thresh = cv2.threshold(blurred, 45, 255, cv2.THRESH_BINARY)
+    
+    mask = np.zeros_like(gray)
+    cv2.circle(mask, (width // 2, height // 2), int(min(width, height) * 0.46), 255, -1)
+    internal_thresh = cv2.bitwise_and(thresh, thresh, mask=mask)
+    contours, _ = cv2.findContours(internal_thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    
+    for cnt in contours:
+        if cv2.contourArea(cnt) > 4: 
+            (x, y), radius = cv2.minEnclosingCircle(cnt)
+            cv2.circle(annotated_img, (int(x), int(y)), int(radius) + 6, (0, 255, 220), 2)
+            cv2.drawMarker(annotated_img, (int(x), int(y)), (0, 0, 255), cv2.MARKER_CROSS, 8, 1)
+
+    _, buffer = cv2.imencode('.png', annotated_img)
+    b64_str = base64.b64encode(buffer).decode('utf-8')
+    return b64_str, width, height
+

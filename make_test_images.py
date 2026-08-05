@@ -49,6 +49,6 @@ print(f"Generating 10 evaluation wafer maps into folder: '{output_dir}/'...")
 for i, defect in enumerate(defect_plan):
     file_path = os.path.join(output_dir, f"wafer_matrix_sample_{i+1:02d}.png")
     create_synthetic_wafer(file_path, defect_type=defect)
-    print(f" ➔ Created: {file_path} [Failure Class: {defect.upper()}]")
+    print(f" -> Created: {file_path} [Failure Class: {defect.upper()}]")
 
 print("\nSuccess! 10 test samples ready. Upload this entire batch folder to test the system.")

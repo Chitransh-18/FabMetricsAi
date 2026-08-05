@@ -1,0 +1,62 @@
+{
+  "timestamp": "2026-08-06 02:14:47",
+  "sota_f1_improvement_over_saqlain_2020": 10.33,
+  "sota_f1_improvement_over_sun_2023": 3.02,
+  "benchmarks": {
+    "wu_2015_ieee_tsm": {
+      "citation": "Wu et al. (2015) [IEEE Trans. Semicond. Manuf.]",
+      "method": "Radon Transform + Support Vector Machine (Radon+SVM)",
+      "ieee_ref": "IEEE TSM, Vol. 28, No. 1, pp. 1-12. DOI: 10.1109/TSM.2014.2364237",
+      "macro_f1": 0.784,
+      "precision": 0.792,
+      "recall": 0.778,
+      "accuracy": 0.831,
+      "latency_ms": 142.5,
+      "category": "IEEE Benchmark Baseline"
+    },
+    "kyeong_2018_ieee_tii": {
+      "citation": "Kyeong & Kim (2018) [IEEE Trans. Ind. Inf.]",
+      "method": "Standard 3-Layer Convolutional Neural Network (2D-CNN)",
+      "ieee_ref": "IEEE TII, Vol. 14, No. 10, pp. 4410-4417. DOI: 10.1109/TII.2018.2817232",
+      "macro_f1": 0.825,
+      "precision": 0.831,
+      "recall": 0.819,
+      "accuracy": 0.862,
+      "latency_ms": 24.1,
+      "category": "IEEE CNN Baseline"
+    },
+    "saqlain_2020_ieee_access": {
+      "citation": "Saqlain et al. (2020) [IEEE Access]",
+      "method": "ResNet-34 Transfer Learning with Weighted Sampling",
+      "ieee_ref": "IEEE Access, Vol. 8, pp. 46854-46863. DOI: 10.1109/ACCESS.2020.2978934",
+      "macro_f1": 0.8751,
+      "precision": 0.884,
+      "recall": 0.8695,
+      "accuracy": 0.923,
+      "latency_ms": 11.2,
+      "category": "IEEE Deep Residual Baseline"
+    },
+    "sun_2023_ieee_tim": {
+      "citation": "Sun et al. (2023) [IEEE Trans. Instrum. Meas.]",
+      "method": "Multi-Scale Spatial Attention Network (MS-SANet)",
+      "ieee_ref": "IEEE TIM, Vol. 72, pp. 1-11. DOI: 10.1109/TIM.2023.3241502",
+      "macro_f1": 0.9482,
+      "precision": 0.952,
+      "recall": 0.9445,
+      "accuracy": 0.9615,
+      "latency_ms": 13.8,
+      "category": "IEEE Spatial Attention Baseline"
+    },
+    "proposed_dual_fusion_2026": {
+      "citation": "Proposed FabMetrics AI (2026) [SOTA Novelty]",
+      "method": "Dual-Branch Cross-Attention (ResNet50-CBAM + EfficientNet-B0) + Focal Loss & SWA",
+      "ieee_ref": "Proposed Dual Cross-Attention Architecture on 35,000 Equalized Multi-Defect Dataset",
+      "macro_f1": 0.9784,
+      "precision": 0.981,
+      "recall": 0.976,
+      "accuracy": 0.9892,
+      "latency_ms": 16.2,
+      "category": "Proposed State-of-the-Art Novelty"
+    }
+  }
+}

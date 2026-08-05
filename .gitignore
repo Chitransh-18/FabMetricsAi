@@ -10,10 +10,13 @@ venv/
 ENV/
 wafer_env/
 
-# Large Model Weights (Keep the repo lightweight)
+# Large Files, Models & Datasets
 *.pth
 *.pkl
 *.h5
+*.zip
+WM811K_Balanced_Kaggle/
+*.log
 
 # Operating System Files
 Thumbs.db

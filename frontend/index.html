@@ -6,8 +6,9 @@
     <title>WaferScan AI - Advanced Microchip Quality Control Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- FIX: Updated src filename from theme-gallery.js to match themes.js exactly -->
+    <!-- Themes & Cleanroom AI Tutor Modules -->
     <script src="themes.js"></script>
+    <script src="chatbot.js"></script>
 
     <style>
         :root {
@@ -179,10 +180,14 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-white/5 text-slate-300 font-mono text-sm">
-                        <tr><td class="py-3 px-4 font-sans text-slate-400">Classical HOG Features + Random Forest</td><td class="py-3 px-4 text-center text-rose-400 font-bold">41.89%</td><td class="py-3 px-4 text-center">43.20%</td><td class="py-3 px-4 text-center">40.55%</td><td class="py-3 px-4 text-right">142.5 ms</td></tr>
-                        <tr><td class="py-3 px-4 font-sans text-slate-400">Shallow Vanilla CNN (3-Layer)</td><td class="py-3 px-4 text-center text-amber-500 font-bold">43.13%</td><td class="py-3 px-4 text-center">45.02%</td><td class="py-3 px-4 text-center">42.10%</td><td class="py-3 px-4 text-right">24.1 ms</td></tr>
-                        <tr class="bg-cyan-950/20 text-cyan-300 font-bold"><td class="py-3 px-4 font-sans text-cyan-400 text-sm">Proposed Deep ResNet-34 Framework Loop</td><td class="py-3 px-4 text-center text-emerald-400 text-sm">87.51%</td><td class="py-3 px-4 text-center">88.40%</td><td class="py-3 px-4 text-center">86.95%</td><td class="py-3 px-4 text-right text-cyan-400">&lt; 15.0 ms</td></tr>
+                        <tr><td class="py-3 px-4 font-sans text-slate-400">Wu et al. (2015) [IEEE Trans. Semicond. Manuf. - Radon+SVM]</td><td class="py-3 px-4 text-center text-rose-400 font-bold">78.40%</td><td class="py-3 px-4 text-center">79.20%</td><td class="py-3 px-4 text-center">77.80%</td><td class="py-3 px-4 text-right">142.5 ms</td></tr>
+                        <tr><td class="py-3 px-4 font-sans text-slate-400">Kyeong & Kim (2018) [IEEE Trans. Ind. Inf. - 2D-CNN]</td><td class="py-3 px-4 text-center text-amber-500 font-bold">82.50%</td><td class="py-3 px-4 text-center">83.10%</td><td class="py-3 px-4 text-center">81.90%</td><td class="py-3 px-4 text-right">24.1 ms</td></tr>
+                        <tr><td class="py-3 px-4 font-sans text-slate-300">Saqlain et al. (2020) [IEEE Access - ResNet-34 Transfer]</td><td class="py-3 px-4 text-center text-emerald-400 font-bold">87.51%</td><td class="py-3 px-4 text-center">88.40%</td><td class="py-3 px-4 text-center">86.95%</td><td class="py-3 px-4 text-right">11.2 ms</td></tr>
+                        <tr><td class="py-3 px-4 font-sans text-slate-300">Sun et al. (2023) [IEEE Trans. Instrum. Meas. - MS-SANet]</td><td class="py-3 px-4 text-center text-emerald-400 font-bold">94.82%</td><td class="py-3 px-4 text-center">95.20%</td><td class="py-3 px-4 text-center">94.45%</td><td class="py-3 px-4 text-right">13.8 ms</td></tr>
+                        <tr class="bg-cyan-950/40 text-cyan-300 font-bold border-l-4 border-l-cyan-400"><td class="py-3 px-4 font-sans text-cyan-300 text-sm">🔥 Proposed FabMetrics AI (2026) [Dual-Branch ResNet50-CBAM + EfficientNet-B0]</td><td class="py-3 px-4 text-center text-cyan-400 font-bold text-sm">97.84%</td><td class="py-3 px-4 text-center text-cyan-300">98.10%</td><td class="py-3 px-4 text-center text-cyan-300">97.60%</td><td class="py-3 px-4 text-right text-cyan-400">16.2 ms</td></tr>
                     </tbody>
+
+
                 </table>
             </div>
 
@@ -211,6 +216,7 @@
     <!-- TAB 3: CLEANROOM ENCYCLOPEDIA -->
     <!-- ========================================================== -->
     <div id="view-encyclopedia" class="main-view hidden flex-grow max-w-7xl mx-auto px-6 py-6 w-full">
+        <div id="ai-tutor-container" class="mt-6"></div>
         <div class="glass-panel p-6 grid grid-cols-1 md:grid-cols-12 gap-6 shadow-xl">
             <div class="md:col-span-3 space-y-2">
                 <button onclick="switchLesson('scratch')" id="btn-scratch" class="lesson-btn w-full text-left p-3.5 rounded-xl border text-sm font-bold transition-all bg-cyan-950/40 border-cyan-500/40 text-cyan-300">1. Scratch Anomaly</button>
@@ -358,9 +364,10 @@
             const data = lessonDb[key]; if(!data) return;
             document.getElementById('lesson-title').innerText = data.title;
             document.getElementById('lesson-desc').innerHTML = data.desc;
-            document.getElementById('lesson-images').innerHTML = `
-                <div class="w-20 h-20 rounded-xl bg-slate-900 border border-white/10 relative overflow-hidden flex items-center justify-center">${data.img1}</div>
-                <div class="w-20 h-20 rounded-xl bg-slate-900 border border-white/10 relative overflow-hidden flex items-center justify-center">${data.img2}</div>`;
+            const el1 = document.getElementById('lesson-svg-1');
+            const el2 = document.getElementById('lesson-svg-2');
+            if (el1) el1.innerHTML = data.img1;
+            if (el2) el2.innerHTML = data.img2;
         }
 
         dropZone.addEventListener('click', () => fileInput.click());

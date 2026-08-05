@@ -1,7 +1,11 @@
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+
 import torch
 import torch.nn as nn
 from torchvision.models import resnet34, ResNet34_Weights
 import numpy as np
+
 
 # 1. Recreate the identical architecture skeleton
 def build_model(num_classes: int = 9) -> nn.Module:
