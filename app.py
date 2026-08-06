@@ -16,6 +16,12 @@ from typing import Dict, List, Any, Optional
 
 # Bypass local thread locks on machine execution lines
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+os.environ["TORCH_HOME"] = "D:/Web Dev/FabMetrics_AI/cache/torch"
+os.environ["HF_HOME"] = "D:/Web Dev/FabMetrics_AI/cache/huggingface"
+os.environ["TMPDIR"] = "D:/Web Dev/FabMetrics_AI/cache/tmp"
+os.environ["TEMP"] = "D:/Web Dev/FabMetrics_AI/cache/tmp"
+os.environ["TMP"] = "D:/Web Dev/FabMetrics_AI/cache/tmp"
+
 
 import torch
 import torch.nn as nn

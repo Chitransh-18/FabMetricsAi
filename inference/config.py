@@ -4,10 +4,13 @@ from __future__ import annotations
 
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+os.environ["TORCH_HOME"] = "D:/Web Dev/FabMetrics_AI/cache/torch"
+os.environ["HF_HOME"] = "D:/Web Dev/FabMetrics_AI/cache/huggingface"
+os.environ["TMPDIR"] = "D:/Web Dev/FabMetrics_AI/cache/tmp"
+os.environ["TEMP"] = "D:/Web Dev/FabMetrics_AI/cache/tmp"
+os.environ["TMP"] = "D:/Web Dev/FabMetrics_AI/cache/tmp"
 
 from typing import Dict, List
-
-
 from wafer_dataset import ID_TO_FAILURE_TYPE, NUM_CLASSES
 
 CLASS_NAMES: List[str] = [ID_TO_FAILURE_TYPE[i] for i in range(NUM_CLASSES)]
@@ -42,4 +45,4 @@ BASELINE_METRICS: Dict[str, Dict[str, float | str]] = {
 }
 
 MAX_UPLOAD_BYTES = 10 * 1024 * 1024  # 10 MB
-DEFAULT_WEIGHTS_PATH = "baseline_resnet34.pth"
+DEFAULT_WEIGHTS_PATH = "D:/Web Dev/FabMetrics_AI/baseline_resnet34.pth"
