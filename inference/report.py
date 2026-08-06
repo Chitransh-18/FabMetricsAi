@@ -196,19 +196,30 @@ def generate_comprehensive_pdf_report(
     # =========================================================================
     # PAGE 1: EXECUTIVE COVER PAGE & YIELD SUMMARY
     # =========================================================================
-    logo_path = Path(__file__).parent.parent / "assets" / "logo.png"
-    if logo_path.exists():
+    logo_paths = [
+        Path(__file__).parent.parent / "assets" / "logo.png",
+        Path(__file__).parent.parent / "frontend" / "assets" / "logo.png",
+        Path("assets/logo.png"),
+        Path("frontend/assets/logo.png")
+    ]
+    logo_file = None
+    for lp in logo_paths:
+        if lp.exists():
+            logo_file = lp
+            break
+
+    if logo_file:
         try:
-            logo_img = RLImage(str(logo_path), width=220, height=80)
+            logo_img = RLImage(str(logo_file), width=180, height=65)
             story.append(logo_img)
             story.append(Spacer(1, 6))
         except Exception:
             pass
 
     story.append(Paragraph("FABMETRICS AI — AUTOMATED WAFER YIELD INSPECTION REPORT", subtitle_style))
-
     story.append(Paragraph("Industrial Semiconductor Cleanroom Defect Analysis & Patent Audit", title_style))
     story.append(Paragraph("<b>PATENT PENDING &bull; REGISTRATION US-2026-FABMETRICS-AI &bull; CONFIDENTIAL AUDIT REPORT</b>", watermark_style))
+
     
     meta_text = (
         f"<b>Inspector Profile:</b> {username} ({role}) &nbsp;|&nbsp; "
@@ -424,6 +435,33 @@ def generate_comprehensive_pdf_report(
     ))
     story.append(Paragraph("© 2026 FabMetrics AI Platform &bull; All Rights Reserved &bull; Patent Pending REG US-2026-FABMETRICS-AI", meta_style))
 
-    doc.build(story)
+    def draw_watermark_and_header(canvas, doc):
+        canvas.saveState()
+        # Watermark
+        canvas.setFont("Helvetica-Bold", 30)
+        canvas.setFillColor(colors.HexColor("#cbd5e1"))
+        canvas.setFillAlpha(0.12)
+        canvas.saveState()
+        canvas.translate(297, 420)
+        canvas.rotate(45)
+        canvas.drawCentredString(0, 0, "PATENT PENDING • REG US-2026-FABMETRICS-AI")
+        canvas.restoreState()
+
+        # Running header & footer
+        canvas.setFont("Helvetica-Bold", 8)
+        canvas.setFillColor(colors.HexColor("#64748b"))
+        canvas.drawString(36, 810, "FABMETRICS AI — CONFIDENTIAL SEMICONDUCTOR REPORT")
+        canvas.drawRightString(559, 810, "PATENT REG US-2026-FABMETRICS-AI")
+        canvas.setStrokeColor(colors.HexColor("#cbd5e1"))
+        canvas.setLineWidth(0.5)
+        canvas.line(36, 804, 559, 804)
+
+        canvas.line(36, 36, 559, 36)
+        canvas.drawString(36, 24, "CONFIDENTIAL & PROPRIETARY — FABMETRICS AI PLATFORM")
+        canvas.drawRightString(559, 24, f"Page {doc.page} of 4")
+        canvas.restoreState()
+
+    doc.build(story, onFirstPage=draw_watermark_and_header, onLaterPages=draw_watermark_and_header)
     buffer.seek(0)
     return buffer.getvalue()
+
