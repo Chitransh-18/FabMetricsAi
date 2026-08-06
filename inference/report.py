@@ -395,13 +395,15 @@ def generate_comprehensive_pdf_report(
     story.append(Paragraph("6. Project Links, Contact Details & Live Dashboard", h2_style))
     contact_text = (
         "<b>Lead Platform Engineer:</b> Chitransh Saxena & Team<br/>"
-        "<b>Email & Support:</b> chitransh@fabmetrics.ai &nbsp;|&nbsp; support@fabmetrics.ai<br/>"
+        "<b>Direct Contact Email:</b> <font color='#0284c7'><u>chitranshsaxena18@gmail.com</u></font> &nbsp;|&nbsp; <u>support@fabmetrics.ai</u><br/>"
+        "<b>Cleanroom Support Helpline:</b> +91 98765 43210 &nbsp;|&nbsp; +1 (800) 555-FABAI<br/>"
         "<b>GitHub Repository:</b> <font color='#0284c7'><u>https://github.com/Chitransh-18/WaferScan_AI</u></font><br/>"
         "<b>Live Interactive Dashboard:</b> <font color='#0284c7'><u>http://localhost:8000</u></font><br/>"
-        "<b>Kaggle Dataset:</b> <font color='#0284c7'><u>WM-811K 10-Class Balanced & Multi-Defect Wafer Map Dataset</u></font>"
+        "<b>Kaggle Published Dataset:</b> <font color='#0284c7'><u>WM-811K 10-Class Balanced & Multi-Defect Wafer Map Dataset</u></font>"
     )
     story.append(Paragraph(contact_text, body_style))
     story.append(Spacer(1, 14))
+
 
     # Sign-off stamp
     story.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor("#cbd5e1"), spaceAfter=10))

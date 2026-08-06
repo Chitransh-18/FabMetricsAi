@@ -156,14 +156,29 @@ def get_user_inspections(user_id: Optional[int] = None, limit: int = 50) -> List
     rows = cursor.fetchall()
     conn.close()
 
-    results = []
-    for r in rows:
-        item = dict(r)
+    return results
+
+def get_inspection_by_id(record_id: int) -> Optional[Dict[str, Any]]:
+    """Fetch single inspection record by ID."""
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        SELECT id, user_id, username, filename, predicted_class, confidence, defects_count, bounding_boxes_json, image_b64, timestamp 
+        FROM inspection_records WHERE id = ?
+        """,
+        (record_id,)
+    )
+    row = cursor.fetchone()
+    conn.close()
+
+    if row:
+        item = dict(row)
         item["bounding_boxes"] = json.loads(item["bounding_boxes_json"] or "[]")
         del item["bounding_boxes_json"]
-        results.append(item)
+        return item
+    return None
 
-    return results
 
 def get_database_analytics() -> Dict[str, Any]:
     """Calculate aggregate yield statistics from database inspection records."""

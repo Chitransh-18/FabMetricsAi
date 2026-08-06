@@ -36,11 +36,13 @@ from inference.database import (
     authenticate_user,
     save_inspection_record,
     get_user_inspections,
+    get_inspection_by_id,
     get_database_analytics
 )
 from inference.report import generate_comprehensive_pdf_report
 
-APP_TITLE = "FabMetrics AI — Semiconductor Yield & Defect Platform"
+APP_TITLE = "FabMetrics AI — Industrial Wafer Defect & Yield Platform"
+
 MODEL_PATH = DEFAULT_WEIGHTS_PATH
 IMAGE_SIZE = 224
 DEVICE = resolve_device()
@@ -268,6 +270,35 @@ async def generate_report(payload: dict = Body(...)):
     except Exception as e:
         logger.error(f"Report generation error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/history/download-report/{record_id}")
+async def download_history_report(record_id: int):
+    try:
+        rec = get_inspection_by_id(record_id)
+        if not rec:
+            raise HTTPException(status_code=404, detail=f"Inspection record #{record_id} not found.")
+
+        pdf_bytes = generate_comprehensive_pdf_report(
+            results=[{
+                "filename": rec["filename"],
+                "predicted_class": rec["predicted_class"],
+                "confidence": rec["confidence"],
+                "bounding_boxes": rec.get("bounding_boxes", []),
+                "image_b64": rec.get("image_b64", "")
+            }],
+            user_info={"username": rec["username"], "role": "Cleanroom Engineer"}
+        )
+        return StreamingResponse(
+            io.BytesIO(pdf_bytes),
+            media_type="application/pdf",
+            headers={"Content-Disposition": f"attachment; filename=FabMetrics_Report_Record_{record_id}.pdf"}
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Download history report error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 
 # ==========================================================
