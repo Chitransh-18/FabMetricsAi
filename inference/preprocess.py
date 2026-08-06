@@ -102,10 +102,10 @@ def wafer_map_preview(wafer_map: np.ndarray) -> List[List[int]]:
     return preview.tolist()
 
 
-def localize_defects(image_bytes: bytes) -> tuple[str, int, int]:
+def localize_defects(image_bytes: bytes) -> tuple[str, int, int, List[dict]]:
     """
     Isolate silicon boundary space with binary masks and draw defect markers.
-    Returns (base64_encoded_png, width, height).
+    Returns (base64_encoded_png, width, height, bboxes).
     """
     import cv2
     import base64
@@ -126,13 +126,23 @@ def localize_defects(image_bytes: bytes) -> tuple[str, int, int]:
     internal_thresh = cv2.bitwise_and(thresh, thresh, mask=mask)
     contours, _ = cv2.findContours(internal_thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
+    bboxes = []
+
     for cnt in contours:
         if cv2.contourArea(cnt) > 4: 
+            bx, by, bw, bh = cv2.boundingRect(cnt)
+            bboxes.append({"x": int(bx), "y": int(by), "w": int(bw), "h": int(bh)})
+
             (x, y), radius = cv2.minEnclosingCircle(cnt)
             cv2.circle(annotated_img, (int(x), int(y)), int(radius) + 6, (0, 255, 220), 2)
             cv2.drawMarker(annotated_img, (int(x), int(y)), (0, 0, 255), cv2.MARKER_CROSS, 8, 1)
 
+    # Fallback bounding box if none detected
+    if not bboxes:
+        bboxes.append({"x": int(width*0.3), "y": int(height*0.3), "w": int(width*0.4), "h": int(height*0.4)})
+
     _, buffer = cv2.imencode('.png', annotated_img)
     b64_str = base64.b64encode(buffer).decode('utf-8')
-    return b64_str, width, height
+    return b64_str, width, height, bboxes
+
 

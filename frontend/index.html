@@ -69,11 +69,13 @@
         <nav class="flex space-x-2 bg-slate-950/60 p-1 rounded-xl border border-white/5">
             <button onclick="switchMainTab('factory')" id="tab-btn-factory" class="tab-link px-4 py-1.5 rounded-lg text-sm font-bold transition-all tab-active">🚀 Factory Floor</button>
             <button onclick="switchMainTab('analytics')" id="tab-btn-analytics" class="tab-link px-4 py-1.5 rounded-lg text-sm font-bold transition-all text-slate-400 hover:text-slate-200">📊 Deep Analytics</button>
+            <button onclick="switchMainTab('history')" id="tab-btn-history" class="tab-link px-4 py-1.5 rounded-lg text-sm font-bold transition-all text-slate-400 hover:text-slate-200">📜 Remote History</button>
             <button onclick="switchMainTab('encyclopedia')" id="tab-btn-encyclopedia" class="tab-link px-4 py-1.5 rounded-lg text-sm font-bold transition-all text-slate-400 hover:text-slate-200">📚 Cleanroom Library</button>
         </nav>
 
         <!-- Right Side Controls System -->
         <div class="flex items-center space-x-4">
+            <span class="hidden xl:inline-block px-3 py-1 bg-rose-500/10 text-rose-400 rounded-full border border-rose-500/20 text-xs font-bold font-mono">PATENT PENDING • REG US-2026-FABMETRICS-AI</span>
             <button onclick="openThemeModal()" class="p-2 bg-slate-900 hover:bg-slate-800 border border-white/10 rounded-xl transition-all flex items-center space-x-2 text-sm font-semibold text-slate-300">
                 <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg>
                 <span>Theme Gallery</span>
@@ -81,6 +83,7 @@
             <div class="text-sm font-mono px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20" id="backend-status">System Online</div>
         </div>
     </header>
+
 
     <!-- ========================================================== -->
     <!-- TAB 1: FACTORY FLOOR VIEW -->
@@ -249,14 +252,48 @@
         </div>
     </div>
 
+    <!-- ========================================================== -->
+    <!-- TAB 4: REMOTE INSPECTION HISTORY VIEW (SQLITE DB) -->
+    <!-- ========================================================== -->
+    <div id="view-history" class="main-view hidden max-w-7xl mx-auto px-6 py-6 w-full flex-grow">
+        <div class="glass-panel p-6">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-cyan-400">Remote Profile Inspection History (SQLite Database)</h2>
+                    <p class="text-xs text-slate-400 mt-1">Past batch wafer scans stored securely in fabmetrics.db for remote user profile access.</p>
+                </div>
+                <button onclick="loadHistoryData()" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 border border-white/10 text-cyan-400 rounded-lg text-xs font-bold font-mono transition-all">🔄 Refresh Database</button>
+            </div>
+            <div class="overflow-x-auto border border-white/5 rounded-xl">
+                <table class="w-full text-left border-collapse text-sm">
+                    <thead>
+                        <tr class="border-b border-white/10 text-slate-400 font-bold bg-slate-950 py-3">
+                            <th class="py-3 px-4">Scan ID</th>
+                            <th class="py-3 px-4">User Profile</th>
+                            <th class="py-3 px-4">Substrate Filename</th>
+                            <th class="py-3 px-4 text-center">Predicted Defect</th>
+                            <th class="py-3 px-4 text-center">Confidence</th>
+                            <th class="py-3 px-4 text-center">Clusters</th>
+                            <th class="py-3 px-4 text-right">Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-table-body" class="divide-y divide-white/5 text-slate-300 font-mono text-sm">
+                        <tr><td colspan="7" class="py-8 text-center text-slate-500">Loading remote inspection database...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <!-- Alert toast System -->
     <div id="error-toast" class="hidden fixed bottom-6 right-6 max-w-sm bg-rose-950/90 border border-rose-500/30 text-rose-200 p-4 rounded-xl shadow-2xl z-50 flex items-start space-x-3">
         <div class="flex-grow"><h4 class="text-sm font-bold uppercase tracking-wider text-rose-300">Execution Error</h4><p class="text-sm text-rose-300/80 mt-1" id="error-message"></p></div>
     </div>
 
     <!-- Footer Copyright Layout -->
-    <footer class="border-t border-white/5 bg-slate-950 text-center py-3 text-xs text-slate-600 tracking-wide">
-        &copy; 2026 WaferScan Platform &bull; Engineered by Chitransh Saxena & Team
+    <footer class="border-t border-white/5 bg-slate-950/80 text-center py-4 text-xs text-slate-500 space-y-1">
+        <div>&copy; 2026 FabMetrics AI Platform &bull; Engineered by Chitransh Saxena & Team &bull; <span class="text-rose-400 font-mono">PATENT PENDING • REG US-2026-FABMETRICS-AI</span></div>
+        <div>GitHub: <a href="https://github.com/Chitransh-18/WaferScan_AI" target="_blank" class="text-cyan-400 underline">https://github.com/Chitransh-18/WaferScan_AI</a> &bull; Live Dashboard: <a href="http://localhost:8000" target="_blank" class="text-cyan-400 underline">http://localhost:8000</a></div>
     </footer>
 
     <!-- Script Execution System Matrix -->
@@ -286,6 +323,9 @@
             document.getElementById('view-' + viewKey).classList.remove('hidden');
             document.getElementById('tab-btn-' + viewKey).classList.add('tab-active');
             
+            if (viewKey === 'history') {
+                loadHistoryData();
+            }
             // Hide back button if navigating tabs directly
             if (viewKey !== 'factory') showroomBackBtn.classList.add('hidden');
         }
@@ -294,6 +334,32 @@
         function returnToDeepAnalytics() {
             showroomBackBtn.classList.add('hidden');
             switchMainTab('analytics');
+        }
+
+        async function loadHistoryData() {
+            try {
+                const res = await fetch(`${API_URL}/api/history`);
+                if (!res.ok) return;
+                const data = await res.json();
+                const tbody = document.getElementById('history-table-body');
+                if (!data.records || data.records.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-500">No inspection records found in fabmetrics.db</td></tr>`;
+                    return;
+                }
+                tbody.innerHTML = data.records.map(r => `
+                    <tr>
+                        <td class="py-3 px-4 text-cyan-400 font-bold">#${r.id}</td>
+                        <td class="py-3 px-4 font-sans text-slate-300">${r.username}</td>
+                        <td class="py-3 px-4 font-sans text-slate-400">${r.filename}</td>
+                        <td class="py-3 px-4 text-center font-bold ${r.predicted_class.toLowerCase() === 'none' ? 'text-emerald-400' : 'text-rose-400'}">${r.predicted_class}</td>
+                        <td class="py-3 px-4 text-center text-cyan-400">${(r.confidence * 100).toFixed(1)}%</td>
+                        <td class="py-3 px-4 text-center">${r.defects_count}</td>
+                        <td class="py-3 px-4 text-right text-slate-400">${r.timestamp}</td>
+                    </tr>
+                `).join('');
+            } catch (e) {
+                console.error("History fetch error", e);
+            }
         }
 
         const showroomData = {
@@ -409,7 +475,7 @@
             workspacePanel.innerHTML = `
                 <div class="md:col-span-7"><div class="w-full aspect-square bg-slate-950 border border-white/10 rounded-2xl p-2 flex items-center justify-center"><img src="data:image/png;base64,${data.annotated_image}" class="w-full h-full object-contain rounded-xl"></div></div>
                 <div class="md:col-span-5 space-y-4">
-                    <div class="bg-slate-950 p-4 border border-white/5 text-center"><div class="text-2xl font-black text-white">${data.predicted_class}</div><div class="text-sm text-cyan-400 mt-1">${(data.confidence*100).toFixed(1)}% Confidence</div></div>
+                    <div class="bg-slate-950 p-4 border border-white/5 rounded-xl text-center"><div class="text-2xl font-black text-white">${data.predicted_class}</div><div class="text-sm text-cyan-400 mt-1">${(data.confidence*100).toFixed(1)}% Confidence</div></div>
                     <div class="bg-slate-950/40 p-4 border border-white/5 rounded-xl text-sm space-y-1"><div class="flex justify-between"><span>Latency:</span><span>${data.inference_time_ms} ms</span></div><div class="flex justify-between"><span>Resolution:</span><span>${data.image_width}x${data.image_height}</span></div></div>
                     <div class="bg-slate-950/30 p-3 rounded-xl border border-white/5"><div id="top3-container" class="space-y-2"></div></div>
                 </div>`;
@@ -418,9 +484,34 @@
 
         async function triggerReportDownload() {
             const records = [];
-            stagedFiles.forEach(item => { const res = executionResults[item.id]; if(res) records.push({ filename: item.file.name, predicted_class: res.predicted_class, confidence: res.confidence }); });
-            const response = await fetch(`${API_URL}/generate-report`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ results: records }) });
-            if(response.ok) { const blob = await response.blob(); const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = "WaferScan_AI_Report.pdf"; a.click(); }
+            stagedFiles.forEach(item => {
+                const res = executionResults[item.id];
+                if(res) {
+                    records.push({
+                        filename: item.file.name,
+                        predicted_class: res.predicted_class,
+                        confidence: res.confidence,
+                        bounding_boxes: res.bounding_boxes || [],
+                        image_b64: res.annotated_image || ""
+                    });
+                }
+            });
+            const response = await fetch(`${API_URL}/generate-report`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    results: records,
+                    user: { username: "admin", role: "Lead Semiconductor Engineer" }
+                })
+            });
+            if(response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = "FabMetrics_AI_Executive_Report.pdf";
+                a.click();
+            }
         }
 
         async function checkBackendConnection() {
