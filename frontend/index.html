@@ -657,47 +657,132 @@
             });
         }
 
-        // SVG Visual Wafer Map Generator with Red Bounding Box Segmentation Overlay
+        // SVG Visual Wafer Map Generator with Unique Seeded Segmentation Overlays & Die Grid
         function generateWaferMapSVG(defectClass, sampleId) {
             let overlayGraphics = "";
-            const isDefective = defectClass.toLowerCase() !== "none";
+            const confScore = (0.85 + ((sampleId * 17) % 15) * 0.01).toFixed(2);
+            const s = sampleId;
+
+            // Draw realistic silicon die grid background
+            let dieGrid = "";
+            for (let gx = 20; gx <= 100; gx += 12) {
+                for (let gy = 20; gy <= 100; gy += 12) {
+                    const dist = Math.hypot(gx - 60, gy - 60);
+                    if (dist < 48) {
+                        const isFailingDie = (!defectClass.toLowerCase().includes("none") && ((gx * gy + s * 13) % 11 === 0));
+                        const dieColor = isFailingDie ? "#f43f5e" : "#1e293b";
+                        dieGrid += `<rect x="${gx}" y="${gy}" width="10" height="10" fill="${dieColor}" stroke="#0f172a" stroke-width="0.5"/>`;
+                    }
+                }
+            }
 
             if (defectClass === "Scratch") {
+                const x1 = 20 + (s * 7) % 30;
+                const y1 = 20 + (s * 13) % 30;
+                const x2 = 65 + (s * 11) % 30;
+                const y2 = 65 + (s * 9) % 30;
+                const bx = Math.min(x1, x2) - 4;
+                const by = Math.min(y1, y2) - 4;
+                const bw = Math.abs(x2 - x1) + 8;
+                const bh = Math.abs(y2 - y1) + 8;
+
                 overlayGraphics = `
-                    <line x1="30" y1="30" x2="80" y2="80" stroke="#f43f5e" stroke-width="3" stroke-linecap="round"/>
-                    <rect x="25" y="25" width="60" height="60" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3,3"/>
-                    <text x="28" y="22" fill="#38bdf8" font-size="7" font-family="monospace">Scratch [0.94]</text>
+                    <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#f43f5e" stroke-width="3" stroke-linecap="round"/>
+                    <circle cx="${(x1+x2)/2}" cy="${(y1+y2)/2}" r="3" fill="#f43f5e"/>
+                    <rect x="${bx}" y="${by}" width="${bw}" height="${bh}" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3,3"/>
+                    <text x="${Math.max(6, bx)}" y="${Math.max(14, by - 3)}" fill="#38bdf8" font-size="7" font-family="monospace">Scratch [${confScore}]</text>
                 `;
             } else if (defectClass === "Donut") {
+                const cx = 55 + (s % 5) * 2;
+                const cy = 55 + ((s * 3) % 5) * 2;
+                const radius = 20 + (s % 5) * 4;
+                const bx = cx - radius - 5;
+                const by = cy - radius - 5;
+                const bw = radius * 2 + 10;
+                const bh = radius * 2 + 10;
+
                 overlayGraphics = `
-                    <circle cx="60" cy="60" r="30" fill="none" stroke="#f43f5e" stroke-width="3"/>
-                    <rect x="25" y="25" width="70" height="70" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3,3"/>
-                    <text x="28" y="22" fill="#38bdf8" font-size="7" font-family="monospace">Donut [0.92]</text>
+                    <circle cx="${cx}" cy="${cy}" r="${radius}" fill="none" stroke="#f43f5e" stroke-width="3.5" stroke-dasharray="${10 + (s%3)*4},${2 + (s%2)*2}"/>
+                    <rect x="${bx}" y="${by}" width="${bw}" height="${bh}" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3,3"/>
+                    <text x="${Math.max(6, bx)}" y="${Math.max(14, by - 3)}" fill="#38bdf8" font-size="7" font-family="monospace">Donut [${confScore}]</text>
                 `;
             } else if (defectClass === "Edge-Ring") {
+                const radius = 44 + (s % 3) * 2;
+                const ringWidth = 3 + (s % 3);
                 overlayGraphics = `
-                    <circle cx="60" cy="60" r="48" fill="none" stroke="#f43f5e" stroke-width="4"/>
-                    <rect x="8" y="8" width="104" height="104" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3,3"/>
-                    <text x="12" y="20" fill="#38bdf8" font-size="7" font-family="monospace">Edge-Ring [0.98]</text>
+                    <circle cx="60" cy="60" r="${radius}" fill="none" stroke="#f43f5e" stroke-width="${ringWidth}"/>
+                    <rect x="${60 - radius - 3}" y="${60 - radius - 3}" width="${radius * 2 + 6}" height="${radius * 2 + 6}" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3,3"/>
+                    <text x="12" y="16" fill="#38bdf8" font-size="7" font-family="monospace">Edge-Ring [${confScore}]</text>
+                `;
+            } else if (defectClass === "Edge-Loc") {
+                const angle = ((s * 72) % 360) * (Math.PI / 180);
+                const dist = 36;
+                const cx = Math.round(60 + dist * Math.cos(angle));
+                const cy = Math.round(60 + dist * Math.sin(angle));
+                const r = 9 + (s % 4) * 2;
+
+                overlayGraphics = `
+                    <circle cx="${cx}" cy="${cy}" r="${r}" fill="#f43f5e" opacity="0.85"/>
+                    <rect x="${cx - r - 4}" y="${cy - r - 4}" width="${r*2 + 8}" height="${r*2 + 8}" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3,3"/>
+                    <text x="${Math.max(6, cx - r - 4)}" y="${Math.max(12, cy - r - 6)}" fill="#38bdf8" font-size="7" font-family="monospace">Edge-Loc [${confScore}]</text>
+                `;
+            } else if (defectClass === "Loc") {
+                const cx = 35 + (s * 17) % 50;
+                const cy = 35 + (s * 23) % 50;
+                const rx = 12 + (s % 4) * 3;
+                const ry = 9 + (s % 3) * 3;
+
+                overlayGraphics = `
+                    <ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="#f43f5e" opacity="0.85"/>
+                    <rect x="${cx - rx - 4}" y="${cy - ry - 4}" width="${rx*2 + 8}" height="${ry*2 + 8}" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3,3"/>
+                    <text x="${Math.max(6, cx - rx - 4)}" y="${Math.max(12, cy - ry - 6)}" fill="#38bdf8" font-size="7" font-family="monospace">Loc [${confScore}]</text>
                 `;
             } else if (defectClass === "Center") {
+                const cx = 58 + (s % 5) - 2;
+                const cy = 58 + ((s * 2) % 5) - 2;
+                const r = 14 + (s % 4) * 4;
+
                 overlayGraphics = `
-                    <circle cx="60" cy="60" r="18" fill="#f43f5e" opacity="0.8"/>
-                    <rect x="38" y="38" width="44" height="44" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3,3"/>
-                    <text x="40" y="34" fill="#38bdf8" font-size="7" font-family="monospace">Center [0.96]</text>
+                    <circle cx="${cx}" cy="${cy}" r="${r}" fill="#f43f5e" opacity="0.85"/>
+                    <rect x="${cx - r - 4}" y="${cy - r - 4}" width="${r*2 + 8}" height="${r*2 + 8}" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3,3"/>
+                    <text x="${Math.max(6, cx - r - 4)}" y="${Math.max(12, cy - r - 6)}" fill="#38bdf8" font-size="7" font-family="monospace">Center [${confScore}]</text>
+                `;
+            } else if (defectClass === "Near-full") {
+                const r = 38 + (s % 4) * 3;
+                overlayGraphics = `
+                    <circle cx="60" cy="60" r="${r}" fill="#f43f5e" opacity="0.75"/>
+                    <rect x="${60 - r - 3}" y="${60 - r - 3}" width="${r*2 + 6}" height="${r*2 + 6}" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3,3"/>
+                    <text x="14" y="16" fill="#38bdf8" font-size="7" font-family="monospace">Near-full [${confScore}]</text>
+                `;
+            } else if (defectClass === "Random") {
+                let dots = "";
+                let minX = 120, minY = 120, maxX = 0, maxY = 0;
+                for (let i = 0; i < 5 + (s % 5); i++) {
+                    const rx = 30 + ((s * 13 + i * 19) % 60);
+                    const ry = 30 + ((s * 17 + i * 23) % 60);
+                    dots += `<circle cx="${rx}" cy="${ry}" r="3" fill="#f43f5e"/>`;
+                    minX = Math.min(minX, rx); minY = Math.min(minY, ry);
+                    maxX = Math.max(maxX, rx); maxY = Math.max(maxY, ry);
+                }
+                overlayGraphics = `
+                    ${dots}
+                    <rect x="${minX - 5}" y="${minY - 5}" width="${maxX - minX + 10}" height="${maxY - minY + 10}" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3,3"/>
+                    <text x="${Math.max(6, minX - 5)}" y="${Math.max(12, minY - 7)}" fill="#38bdf8" font-size="7" font-family="monospace">Random [${confScore}]</text>
                 `;
             } else if (defectClass === "Multi-Defect") {
+                const x1 = 25 + (s * 3) % 20;
+                const y1 = 25 + (s * 5) % 20;
+                const x2 = 65 + (s * 7) % 20;
+                const y2 = 65 + (s * 11) % 20;
+                const dcx = 75 - (s * 4) % 15;
+                const dcy = 75 - (s * 6) % 15;
+                const dr = 12 + (s % 3) * 3;
+
                 overlayGraphics = `
-                    <line x1="30" y1="30" x2="70" y2="70" stroke="#f43f5e" stroke-width="2.5"/>
-                    <circle cx="75" cy="75" r="16" fill="none" stroke="#f43f5e" stroke-width="2.5"/>
-                    <rect x="20" y="20" width="75" height="75" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3,3"/>
-                    <text x="22" y="16" fill="#38bdf8" font-size="7" font-family="monospace">Multi-Defect [0.97]</text>
-                `;
-            } else if (isDefective) {
-                overlayGraphics = `
-                    <circle cx="45" cy="45" r="14" fill="#f43f5e" opacity="0.8"/>
-                    <rect x="28" y="28" width="35" height="35" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3,3"/>
-                    <text x="30" y="24" fill="#38bdf8" font-size="7" font-family="monospace">${defectClass}</text>
+                    <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#f43f5e" stroke-width="2.5"/>
+                    <circle cx="${dcx}" cy="${dcy}" r="${dr}" fill="none" stroke="#f43f5e" stroke-width="2.5"/>
+                    <rect x="18" y="18" width="84" height="84" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3,3"/>
+                    <text x="20" y="16" fill="#38bdf8" font-size="7" font-family="monospace">Multi-Defect [${confScore}]</text>
                 `;
             } else {
                 overlayGraphics = `
@@ -708,12 +793,14 @@
             return `
                 <svg viewBox="0 0 120 120" class="w-full h-full rounded-lg bg-slate-950">
                     <circle cx="60" cy="60" r="54" fill="#0f172a" stroke="#334155" stroke-width="2"/>
+                    ${dieGrid}
                     <circle cx="60" cy="60" r="50" fill="none" stroke="#1e293b" stroke-width="1" stroke-dasharray="2,2"/>
                     ${overlayGraphics}
                     <text x="6" y="114" fill="#64748b" font-size="7" font-family="monospace">Ex-${String(sampleId).padStart(2, '0')}</text>
                 </svg>
             `;
         }
+
 
         function renderShowroomCatalog() {
             const grid = document.getElementById('showroom-grid');
