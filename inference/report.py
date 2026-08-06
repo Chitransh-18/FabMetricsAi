@@ -143,8 +143,14 @@ def generate_comprehensive_pdf_report(
         rightMargin=36,
         leftMargin=36,
         topMargin=36,
-        bottomMargin=36
+        bottomMargin=36,
+        title="FabMetrics AI — Executive Wafer Yield & Defect Audit Report",
+        author="FabMetrics AI Platform — Chitransh Saxena",
+        subject="Industrial Semiconductor Cleanroom Defect Analysis & Patent Audit",
+        creator="FabMetrics AI Core Engine"
     )
+
+
 
     story = []
     styles = getSampleStyleSheet()
