@@ -156,7 +156,15 @@ def get_user_inspections(user_id: Optional[int] = None, limit: int = 50) -> List
     rows = cursor.fetchall()
     conn.close()
 
+    results = []
+    for r in rows:
+        item = dict(r)
+        item["bounding_boxes"] = json.loads(item["bounding_boxes_json"] or "[]")
+        del item["bounding_boxes_json"]
+        results.append(item)
+
     return results
+
 
 def get_inspection_by_id(record_id: int) -> Optional[Dict[str, Any]]:
     """Fetch single inspection record by ID."""

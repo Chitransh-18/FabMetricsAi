@@ -196,7 +196,17 @@ def generate_comprehensive_pdf_report(
     # =========================================================================
     # PAGE 1: EXECUTIVE COVER PAGE & YIELD SUMMARY
     # =========================================================================
+    logo_path = Path(__file__).parent.parent / "assets" / "logo.png"
+    if logo_path.exists():
+        try:
+            logo_img = RLImage(str(logo_path), width=220, height=80)
+            story.append(logo_img)
+            story.append(Spacer(1, 6))
+        except Exception:
+            pass
+
     story.append(Paragraph("FABMETRICS AI — AUTOMATED WAFER YIELD INSPECTION REPORT", subtitle_style))
+
     story.append(Paragraph("Industrial Semiconductor Cleanroom Defect Analysis & Patent Audit", title_style))
     story.append(Paragraph("<b>PATENT PENDING &bull; REGISTRATION US-2026-FABMETRICS-AI &bull; CONFIDENTIAL AUDIT REPORT</b>", watermark_style))
     
