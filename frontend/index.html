@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FabMetrics AI — Industrial Semiconductor Yield & Defect Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -17,12 +17,15 @@
             --base-bg: #080c14;
             --card-bg: rgba(13, 20, 35, 0.85);
             --border-radius: 14px;
+            --text-title: #ffffff;
+            --text-main: #f3f4f6;
+            --text-muted: #94a3b8;
         }
         body {
             background-color: var(--base-bg);
-            color: #f3f4f6;
+            color: var(--text-main);
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         .glass-panel {
             background: var(--card-bg);
@@ -33,44 +36,84 @@
             transition: all 0.3s ease;
         }
         .tab-active {
-            background: rgba(34, 211, 238, 0.1);
+            background: rgba(34, 211, 238, 0.15);
             border-color: var(--primary-color);
-            color: var(--primary-color);
+            color: var(--primary-color) !important;
+            font-weight: 700;
         }
+
+        /* DYNAMIC LIGHT THEME FONT CONTRAST OVERRIDES */
+        [data-theme-mode="light"] body {
+            color: #1e293b !important;
+        }
+        [data-theme-mode="light"] h1, 
+        [data-theme-mode="light"] h2, 
+        [data-theme-mode="light"] h3, 
+        [data-theme-mode="light"] .text-white {
+            color: #0f172a !important;
+        }
+        [data-theme-mode="light"] .text-slate-200,
+        [data-theme-mode="light"] .text-slate-300 {
+            color: #334155 !important;
+        }
+        [data-theme-mode="light"] .text-slate-400 {
+            color: #475569 !important;
+        }
+        [data-theme-mode="light"] .text-slate-500 {
+            color: #64748b !important;
+        }
+        [data-theme-mode="light"] .bg-slate-950,
+        [data-theme-mode="light"] .bg-slate-900 {
+            background-color: rgba(241, 245, 249, 0.95) !important;
+            border-color: rgba(0, 0, 0, 0.1) !important;
+        }
+        [data-theme-mode="light"] .glass-panel {
+            background: var(--card-bg) !important;
+            border: 1px solid rgba(0, 0, 0, 0.12) !important;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08) !important;
+        }
+
+        /* Mobile Scrollbar Hide */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #080c14; }
         ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--primary-color); }
     </style>
 </head>
-<body id="main-body" class="min-h-screen flex flex-col justify-between text-base">
+<body id="main-body" class="min-h-screen flex flex-col justify-between text-base antialiased">
 
     <!-- ========================================================== -->
     <!-- 1. LANDING PAGE & AUTHENTICATION GATEWAY (WHEN NOT LOGGED IN) -->
     <!-- ========================================================== -->
-    <div id="landing-gateway" class="min-h-screen flex flex-col justify-between bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 px-6 py-8">
+    <div id="landing-gateway" class="min-h-screen flex flex-col justify-between bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 px-4 sm:px-6 py-6 sm:py-8">
         <!-- Top Bar -->
-        <div class="max-w-7xl mx-auto w-full flex items-center justify-between">
+        <div class="max-w-7xl mx-auto w-full flex flex-col sm:flex-row items-center justify-between gap-4">
             <div class="flex items-center space-x-3">
                 <img src="assets/logo.png" alt="FabMetrics AI Logo" class="h-12 sm:h-14 w-auto object-contain drop-shadow-[0_0_20px_rgba(34,211,238,0.4)]">
+                <div class="flex flex-col justify-center">
+                    <span class="text-xl sm:text-2xl font-black tracking-tight text-white leading-none">FABMETRICS <span class="text-cyan-400">AI</span></span>
+                    <span class="text-xs font-mono text-cyan-400 tracking-wider uppercase mt-1">Semiconductor Inspection Core</span>
+                </div>
             </div>
-
-            <span class="px-3.5 py-1 bg-rose-500/10 text-rose-400 rounded-full border border-rose-500/20 text-xs font-bold font-mono">
+            <span class="px-3.5 py-1.5 bg-rose-500/10 text-rose-400 rounded-full border border-rose-500/20 text-xs font-bold font-mono text-center">
                 PATENT PENDING • REG US-2026-FABMETRICS-AI
             </span>
         </div>
 
         <!-- Central Hero & Authentication Modal -->
-        <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-10 items-center my-auto py-10">
+        <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center my-auto py-8">
             <!-- Left Info Column -->
-            <div class="lg:col-span-7 space-y-6">
+            <div class="lg:col-span-7 space-y-5 text-center lg:text-left">
                 <div class="inline-flex items-center space-x-2 px-3 py-1 bg-cyan-500/10 border border-cyan-500/20 rounded-full text-cyan-400 text-xs font-mono font-bold">
                     <span>🔬 Peer-Reviewed IEEE Benchmark Platform</span>
                 </div>
-                <h2 class="text-4xl lg:text-5xl font-black text-white leading-tight">
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight">
                     Automated Microchip Defect Inspection & Yield Enhancement
                 </h2>
-                <p class="text-slate-300 text-base leading-relaxed">
+                <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
                     Powered by a novel <b>Dual-Branch Cross-Attention Architecture (ResNet50-CBAM + EfficientNet-B0)</b> trained on 
                     35,000 equalized wafer maps with Focal Loss & SWA. Reaches a state-of-the-art <b>97.84% Validation Macro F1-score</b> at sub-16ms latency.
                 </p>
@@ -78,26 +121,26 @@
                 <!-- Key Metric Badges -->
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
                     <div class="bg-slate-900/80 p-3 rounded-xl border border-white/5 text-center">
-                        <div class="text-xl font-bold text-cyan-400">97.84%</div>
+                        <div class="text-lg sm:text-xl font-bold text-cyan-400">97.84%</div>
                         <div class="text-xs text-slate-400">Macro F1-Score</div>
                     </div>
                     <div class="bg-slate-900/80 p-3 rounded-xl border border-white/5 text-center">
-                        <div class="text-xl font-bold text-emerald-400">35,000</div>
+                        <div class="text-lg sm:text-xl font-bold text-emerald-400">35,000</div>
                         <div class="text-xs text-slate-400">Balanced Samples</div>
                     </div>
                     <div class="bg-slate-900/80 p-3 rounded-xl border border-white/5 text-center">
-                        <div class="text-xl font-bold text-cyan-400">16.2 ms</div>
+                        <div class="text-lg sm:text-xl font-bold text-cyan-400">16.2 ms</div>
                         <div class="text-xs text-slate-400">Inference Latency</div>
                     </div>
                     <div class="bg-slate-900/80 p-3 rounded-xl border border-white/5 text-center">
-                        <div class="text-xl font-bold text-purple-400">10 Modes</div>
+                        <div class="text-lg sm:text-xl font-bold text-purple-400">10 Modes</div>
                         <div class="text-xs text-slate-400">Defect Taxonomy</div>
                     </div>
                 </div>
             </div>
 
             <!-- Right Authentication Login Gateway Card -->
-            <div class="lg:col-span-5 glass-panel p-8 shadow-2xl relative">
+            <div class="lg:col-span-5 glass-panel p-6 sm:p-8 shadow-2xl relative">
                 <div class="text-center mb-6">
                     <h3 class="text-xl font-bold text-white">Cleanroom Profile Authentication</h3>
                     <p class="text-xs text-slate-400 mt-1">Log in to access your private inspection research & PDF reports.</p>
@@ -139,7 +182,7 @@
         </div>
 
         <!-- Landing Footer -->
-        <div class="max-w-7xl mx-auto w-full border-t border-white/5 pt-4 text-center text-xs text-slate-500 flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0">
+        <div class="max-w-7xl mx-auto w-full border-t border-white/5 pt-4 text-center text-xs text-slate-500 flex flex-col sm:flex-row justify-between items-center gap-2">
             <div>&copy; 2026 FabMetrics AI Platform &bull; Engineered by Chitransh Saxena & Team</div>
             <div class="space-x-4">
                 <a href="https://github.com/Chitransh-18/WaferScan_AI" target="_blank" class="text-cyan-400 underline">GitHub Repository</a>
@@ -153,22 +196,33 @@
     <!-- ========================================================== -->
     <div id="app-workspace" class="hidden min-h-screen flex flex-col justify-between">
         <!-- Header Section -->
-        <header class="border-b border-white/10 bg-slate-950/70 backdrop-blur-md sticky top-0 z-40 px-6 h-16 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <img src="assets/logo.png" alt="FabMetrics AI Logo" class="h-10 w-auto object-contain">
+        <header class="border-b border-white/10 bg-slate-950/80 backdrop-blur-md sticky top-0 z-40 px-4 sm:px-6 py-2.5 flex flex-col md:flex-row items-center justify-between gap-3">
+            <div class="flex items-center justify-between w-full md:w-auto">
+                <div class="flex items-center space-x-3">
+                    <img src="assets/logo.png" alt="FabMetrics AI Logo" class="h-10 w-auto object-contain">
+                    <div class="flex flex-col justify-center">
+                        <span class="text-base font-black tracking-tight text-white leading-none">FABMETRICS <span class="text-cyan-400">AI</span></span>
+                        <span class="text-[9px] font-mono text-cyan-400 tracking-wider uppercase mt-0.5">Semiconductor Inspection Core</span>
+                    </div>
+                </div>
+
+                <!-- Mobile User Pill & Status -->
+                <div class="flex items-center space-x-2 md:hidden">
+                    <button onclick="handleLogout()" class="text-xs text-rose-400 font-bold px-2 py-1 bg-rose-500/10 rounded-lg">Logout</button>
+                </div>
             </div>
 
-
-            <!-- Central Navigation Panel -->
-            <nav class="flex space-x-2 bg-slate-950/60 p-1 rounded-xl border border-white/5">
-                <button onclick="switchMainTab('factory')" id="tab-btn-factory" class="tab-link px-4 py-1.5 rounded-lg text-sm font-bold transition-all tab-active">🚀 Factory Floor</button>
-                <button onclick="switchMainTab('analytics')" id="tab-btn-analytics" class="tab-link px-4 py-1.5 rounded-lg text-sm font-bold transition-all text-slate-400 hover:text-slate-200">📊 Deep Analytics</button>
-                <button onclick="switchMainTab('history')" id="tab-btn-history" class="tab-link px-4 py-1.5 rounded-lg text-sm font-bold transition-all text-slate-400 hover:text-slate-200">📜 Remote History</button>
-                <button onclick="switchMainTab('encyclopedia')" id="tab-btn-encyclopedia" class="tab-link px-4 py-1.5 rounded-lg text-sm font-bold transition-all text-slate-400 hover:text-slate-200">📚 Cleanroom Library</button>
+            <!-- Central Touch-Scrollable Navigation Panel -->
+            <nav class="flex items-center space-x-1.5 bg-slate-950/60 p-1 rounded-xl border border-white/5 overflow-x-auto max-w-full no-scrollbar">
+                <button onclick="switchMainTab('home')" id="tab-btn-home" class="tab-link px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all whitespace-nowrap tab-active">🏠 Home</button>
+                <button onclick="switchMainTab('factory')" id="tab-btn-factory" class="tab-link px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all text-slate-400 hover:text-slate-200 whitespace-nowrap">🚀 Factory Floor</button>
+                <button onclick="switchMainTab('analytics')" id="tab-btn-analytics" class="tab-link px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all text-slate-400 hover:text-slate-200 whitespace-nowrap">📊 Deep Analytics</button>
+                <button onclick="switchMainTab('history')" id="tab-btn-history" class="tab-link px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all text-slate-400 hover:text-slate-200 whitespace-nowrap">📜 Remote History</button>
+                <button onclick="switchMainTab('encyclopedia')" id="tab-btn-encyclopedia" class="tab-link px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all text-slate-400 hover:text-slate-200 whitespace-nowrap">📚 Cleanroom Library</button>
             </nav>
 
             <!-- Right Side Controls System -->
-            <div class="flex items-center space-x-4">
+            <div class="hidden md:flex items-center space-x-3">
                 <span class="hidden xl:inline-block px-3 py-1 bg-rose-500/10 text-rose-400 rounded-full border border-rose-500/20 text-xs font-bold font-mono">
                     PATENT PENDING • REG US-2026-FABMETRICS-AI
                 </span>
@@ -179,18 +233,160 @@
                     <button onclick="handleLogout()" class="ml-2 text-rose-400 hover:text-rose-300 font-bold underline">Logout</button>
                 </div>
 
-                <button onclick="openThemeModal()" class="p-2 bg-slate-900 hover:bg-slate-800 border border-white/10 rounded-xl transition-all flex items-center space-x-2 text-sm font-semibold text-slate-300">
+                <button onclick="openThemeModal()" class="p-2 bg-slate-900 hover:bg-slate-800 border border-white/10 rounded-xl transition-all flex items-center space-x-2 text-xs font-semibold text-slate-300">
                     <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg>
-                    <span>Theme Gallery</span>
+                    <span>Themes</span>
                 </button>
-                <div class="text-sm font-mono px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20" id="backend-status">System Online</div>
+                <div class="text-xs font-mono px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20" id="backend-status">Online</div>
             </div>
         </header>
 
         <!-- ========================================================== -->
+        <!-- TAB 0: POST-LOGIN HOME LANDING VIEW -->
+        <!-- ========================================================== -->
+        <div id="view-home" class="main-view max-w-7xl mx-auto px-4 sm:px-6 py-6 w-full flex-grow space-y-6">
+            <!-- Welcome Hero Card -->
+            <div class="glass-panel p-6 sm:p-8 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border border-cyan-500/20">
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                    <div class="space-y-2">
+                        <div class="inline-flex items-center space-x-2 px-3 py-1 bg-cyan-500/10 border border-cyan-500/20 rounded-full text-cyan-400 text-xs font-mono font-bold">
+                            <span>⚡ Cleanroom AI Operational Core Ready</span>
+                        </div>
+                        <h2 class="text-2xl sm:text-3xl font-black text-white" id="home-welcome-title">
+                            Welcome back to FabMetrics AI, Inspector! 👋
+                        </h2>
+                        <p class="text-sm text-slate-300 max-w-3xl leading-relaxed">
+                            FabMetrics AI is your end-to-end semiconductor cleanroom yield analysis hub. Powered by our peer-reviewed 
+                            <b>Dual-Branch Cross-Attention Neural Architecture</b>, you can inspect custom silicon substrate wafer maps, localize defect clusters, 
+                            view database history, and generate 4-page executive audit reports.
+                        </p>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row md:flex-col gap-2 w-full md:w-auto shrink-0">
+                        <button onclick="switchMainTab('factory')" class="px-5 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-bold text-xs sm:text-sm uppercase tracking-wider rounded-xl shadow-lg shadow-cyan-500/20 transition-all text-center">
+                            🚀 Launch Inspection Matrix
+                        </button>
+                        <button onclick="switchMainTab('history')" class="px-5 py-3 bg-slate-900 hover:bg-slate-800 border border-white/10 text-cyan-400 font-bold text-xs sm:text-sm uppercase tracking-wider rounded-xl transition-all text-center">
+                            📜 View Saved Research DB
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Access Tools Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                <!-- Card 1 -->
+                <div onclick="switchMainTab('factory')" class="glass-panel p-5 cursor-pointer hover:border-cyan-400/50 transition-all group flex flex-col justify-between">
+                    <div>
+                        <div class="text-3xl mb-3">🚀</div>
+                        <h3 class="text-base font-bold text-white group-hover:text-cyan-400 transition-colors">Factory Floor</h3>
+                        <p class="text-xs text-slate-400 mt-1">Stage custom wafer images, execute multi-defect localization, and export 4-page PDF yield reports.</p>
+                    </div>
+                    <div class="mt-4 text-xs font-bold text-cyan-400 flex items-center space-x-1">
+                        <span>Open Factory Console</span>
+                        <span>→</span>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div onclick="switchMainTab('analytics')" class="glass-panel p-5 cursor-pointer hover:border-cyan-400/50 transition-all group flex flex-col justify-between">
+                    <div>
+                        <div class="text-3xl mb-3">📊</div>
+                        <h3 class="text-base font-bold text-white group-hover:text-cyan-400 transition-colors">Deep Analytics</h3>
+                        <p class="text-xs text-slate-400 mt-1">Compare model performance against Wu (2015), Saqlain (2020), and Sun (2023) IEEE benchmarks.</p>
+                    </div>
+                    <div class="mt-4 text-xs font-bold text-cyan-400 flex items-center space-x-1">
+                        <span>View IEEE Benchmarks</span>
+                        <span>→</span>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div onclick="switchMainTab('history')" class="glass-panel p-5 cursor-pointer hover:border-cyan-400/50 transition-all group flex flex-col justify-between">
+                    <div>
+                        <div class="text-3xl mb-3">📜</div>
+                        <h3 class="text-base font-bold text-white group-hover:text-cyan-400 transition-colors">Remote History</h3>
+                        <p class="text-xs text-slate-400 mt-1">Access your saved inspection records stored securely in fabmetrics.db and download PDF reports anytime.</p>
+                    </div>
+                    <div class="mt-4 text-xs font-bold text-cyan-400 flex items-center space-x-1">
+                        <span>Browse My Database</span>
+                        <span>→</span>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div onclick="switchMainTab('encyclopedia')" class="glass-panel p-5 cursor-pointer hover:border-cyan-400/50 transition-all group flex flex-col justify-between">
+                    <div>
+                        <div class="text-3xl mb-3">📚</div>
+                        <h3 class="text-base font-bold text-white group-hover:text-cyan-400 transition-colors">Cleanroom Library</h3>
+                        <p class="text-xs text-slate-400 mt-1">Learn about 10 silicon defect modes, physical cleanroom causes, and talk with the Cleanroom AI Tutor.</p>
+                    </div>
+                    <div class="mt-4 text-xs font-bold text-cyan-400 flex items-center space-x-1">
+                        <span>Open Cleanroom Tutor</span>
+                        <span>→</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Platform Architecture & Live Database Status -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Left Architecture Overview -->
+                <div class="lg:col-span-8 glass-panel p-6 space-y-4">
+                    <h3 class="text-sm font-bold uppercase tracking-wider text-cyan-400">Technical Model Architecture Overview</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                        <div class="bg-slate-900/60 p-4 rounded-xl border border-white/5 space-y-1">
+                            <div class="font-bold text-white text-sm">ResNet50-CBAM Spatial Branch</div>
+                            <p class="text-slate-400">Extracts 2,048-dimensional high-level topological feature maps with Channel & Spatial Attention gating for localized scratches.</p>
+                        </div>
+                        <div class="bg-slate-900/60 p-4 rounded-xl border border-white/5 space-y-1">
+                            <div class="font-bold text-white text-sm">EfficientNet-B0 Texture Branch</div>
+                            <p class="text-slate-400">Extracts 1,280-dimensional fine-grained surface die textures with MBConv inverted residual blocks.</p>
+                        </div>
+                        <div class="bg-slate-900/60 p-4 rounded-xl border border-white/5 space-y-1">
+                            <div class="font-bold text-white text-sm">Cross-Attention Fusion Layer</div>
+                            <p class="text-slate-400">Fuses spatial and textural representation vectors into a dynamic 3,328-dimensional joint vector.</p>
+                        </div>
+                        <div class="bg-slate-900/60 p-4 rounded-xl border border-white/5 space-y-1">
+                            <div class="font-bold text-white text-sm">Focal Loss & SWA Training</div>
+                            <p class="text-slate-400">Combats heavy class imbalance ($\gamma=2.0$) and stabilizes weight convergence across 50 epochs.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Live Platform Stats -->
+                <div class="lg:col-span-4 glass-panel p-6 flex flex-col justify-between">
+                    <h3 class="text-sm font-bold uppercase tracking-wider text-cyan-400 mb-3">Live Platform Status</h3>
+                    
+                    <div class="space-y-3 font-mono text-xs">
+                        <div class="flex justify-between p-2.5 bg-slate-950 rounded-lg border border-white/5">
+                            <span class="text-slate-400">Database Connection:</span>
+                            <span class="text-emerald-400 font-bold">SQLite Connected</span>
+                        </div>
+                        <div class="flex justify-between p-2.5 bg-slate-950 rounded-lg border border-white/5">
+                            <span class="text-slate-400">Model Core:</span>
+                            <span class="text-cyan-400 font-bold">Sub-16ms Engine</span>
+                        </div>
+                        <div class="flex justify-between p-2.5 bg-slate-950 rounded-lg border border-white/5">
+                            <span class="text-slate-400">PDF Generator:</span>
+                            <span class="text-emerald-400 font-bold">4-Page Engine Active</span>
+                        </div>
+                        <div class="flex justify-between p-2.5 bg-slate-950 rounded-lg border border-white/5">
+                            <span class="text-slate-400">Patent Registration:</span>
+                            <span class="text-rose-400 font-bold">US-2026-FABMETRICS-AI</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 p-3 bg-cyan-500/10 rounded-xl border border-cyan-500/20 text-center">
+                        <span class="text-xs text-cyan-300 font-medium">Ready for cleanroom wafer batch processing</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================== -->
         <!-- TAB 1: FACTORY FLOOR VIEW -->
         <!-- ========================================================== -->
-        <div id="view-factory" class="main-view flex-grow max-w-7xl mx-auto px-6 py-6 w-full grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div id="view-factory" class="main-view hidden flex-grow max-w-7xl mx-auto px-4 sm:px-6 py-6 w-full grid grid-cols-1 lg:grid-cols-12 gap-6">
             <!-- Left Side Upload Stack -->
             <div class="lg:col-span-4 flex flex-col space-y-4">
                 <div class="glass-panel p-5">
@@ -205,9 +401,9 @@
                 <div class="glass-panel p-5 flex flex-col flex-grow min-h-[320px] max-h-[420px]">
                     <div class="flex items-center justify-between mb-3">
                         <h2 class="text-sm font-bold uppercase tracking-wider text-cyan-400">2. Active Pipeline Queue</h2>
-                        <button id="download-report-btn" onclick="triggerReportDownload()" class="hidden text-sm bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1 rounded-md font-bold tracking-wide transition-all shadow-md">Download 4-Page PDF</button>
+                        <button id="download-report-btn" onclick="triggerReportDownload()" class="hidden text-xs sm:text-sm bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1 rounded-md font-bold tracking-wide transition-all shadow-md">Download 4-Page PDF</button>
                     </div>
-                    <div id="batch-stats-bar" class="hidden grid grid-cols-2 gap-2 mb-3 text-sm bg-slate-950 p-2.5 rounded-xl border border-white/5 font-mono">
+                    <div id="batch-stats-bar" class="hidden grid grid-cols-2 gap-2 mb-3 text-xs sm:text-sm bg-slate-950 p-2.5 rounded-xl border border-white/5 font-mono">
                         <div class="text-slate-400">Staged: <span id="batch-progress-text" class="text-cyan-400 font-bold">0/0</span></div>
                         <div class="text-right text-slate-400">Anomalies: <span id="batch-defect-counter" class="text-rose-400 font-bold">0</span></div>
                     </div>
@@ -222,7 +418,7 @@
             <div class="lg:col-span-8 glass-panel p-6 flex flex-col justify-between min-h-[500px]">
                 <div class="flex justify-between items-center mb-3">
                     <h2 class="text-sm font-bold uppercase tracking-wider text-cyan-400">3. High-Resolution Analysis Viewport</h2>
-                    <button id="showroom-back-btn" onclick="returnToDeepAnalytics()" class="hidden px-3 py-1 bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 hover:bg-cyan-500/20 rounded-md text-sm font-semibold transition-all">← Back to Showroom</button>
+                    <button id="showroom-back-btn" onclick="returnToDeepAnalytics()" class="hidden px-3 py-1 bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 hover:bg-cyan-500/20 rounded-md text-xs sm:text-sm font-semibold transition-all">← Back to Showroom</button>
                 </div>
                 
                 <div id="visual-workspace-placeholder" class="flex-grow border border-dashed border-slate-800 rounded-2xl flex flex-col items-center justify-center text-slate-500 p-8 text-center bg-slate-950/20">
@@ -239,7 +435,7 @@
         <!-- ========================================================== -->
         <!-- TAB 2: DEEP ANALYTICS & IEEE COMPARISON VIEW -->
         <!-- ========================================================== -->
-        <div id="view-analytics" class="main-view hidden max-w-7xl mx-auto px-6 py-6 w-full flex-grow space-y-6">
+        <div id="view-analytics" class="main-view hidden max-w-7xl mx-auto px-4 sm:px-6 py-6 w-full flex-grow space-y-6">
             <div class="glass-panel p-6">
                 <h2 class="text-sm font-bold uppercase tracking-wider text-cyan-400 mb-2">Peer-Reviewed IEEE Benchmark & Model Comparison Matrix</h2>
                 <p class="text-sm text-slate-400 mb-4">Official publication comparison against benchmark literature on the WM-811K dataset.</p>
@@ -248,7 +444,7 @@
                     <table class="w-full text-left border-collapse text-sm">
                         <thead>
                             <tr class="border-b border-white/10 text-slate-400 font-bold bg-slate-950 py-3">
-                                <th class="py-3 px-4">IEEE Literature Citation & Method</th>
+                                <th class="py-3 px-4 min-w-[280px]">IEEE Literature Citation & Method</th>
                                 <th class="py-3 px-4 text-center">Macro F1</th>
                                 <th class="py-3 px-4 text-center">Precision</th>
                                 <th class="py-3 px-4 text-center">Recall</th>
@@ -280,17 +476,17 @@
         <!-- ========================================================== -->
         <!-- TAB 3: REMOTE INSPECTION HISTORY VIEW (SQLITE DB) -->
         <!-- ========================================================== -->
-        <div id="view-history" class="main-view hidden max-w-7xl mx-auto px-6 py-6 w-full flex-grow">
+        <div id="view-history" class="main-view hidden max-w-7xl mx-auto px-4 sm:px-6 py-6 w-full flex-grow">
             <div class="glass-panel p-6">
-                <div class="flex items-center justify-between mb-4">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
                     <div>
                         <h2 class="text-sm font-bold uppercase tracking-wider text-cyan-400">Remote Profile Research Inspection History (SQLite Database)</h2>
                         <p class="text-xs text-slate-400 mt-1">Protected user inspection research stored in fabmetrics.db. Log in anywhere to view & download your 4-page PDF reports.</p>
                     </div>
-                    <button onclick="loadHistoryData()" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 border border-white/10 text-cyan-400 rounded-lg text-xs font-bold font-mono transition-all">🔄 Refresh Remote History</button>
+                    <button onclick="loadHistoryData()" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 border border-white/10 text-cyan-400 rounded-lg text-xs font-bold font-mono transition-all shrink-0">🔄 Refresh Remote History</button>
                 </div>
                 <div class="overflow-x-auto border border-white/5 rounded-xl">
-                    <table class="w-full text-left border-collapse text-sm">
+                    <table class="w-full text-left border-collapse text-sm min-w-[700px]">
                         <thead>
                             <tr class="border-b border-white/10 text-slate-400 font-bold bg-slate-950 py-3">
                                 <th class="py-3 px-4">Scan ID</th>
@@ -314,7 +510,7 @@
         <!-- ========================================================== -->
         <!-- TAB 4: CLEANROOM ENCYCLOPEDIA & LIBRARY VIEW -->
         <!-- ========================================================== -->
-        <div id="view-encyclopedia" class="main-view hidden max-w-7xl mx-auto px-6 py-6 w-full flex-grow grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div id="view-encyclopedia" class="main-view hidden max-w-7xl mx-auto px-4 sm:px-6 py-6 w-full flex-grow grid grid-cols-1 lg:grid-cols-12 gap-6">
             <div class="lg:col-span-4 glass-panel p-5 flex flex-col space-y-3">
                 <h2 class="text-sm font-bold uppercase tracking-wider text-cyan-400">Cleanroom Failure Taxonomy</h2>
                 <div class="space-y-2 flex-grow">
@@ -351,7 +547,7 @@
         </div>
 
         <!-- Footer Layout -->
-        <footer class="border-t border-white/5 bg-slate-950/80 text-center py-4 text-xs text-slate-500 space-y-1">
+        <footer class="border-t border-white/5 bg-slate-950/80 text-center py-4 text-xs text-slate-500 space-y-1 px-4">
             <div>&copy; 2026 FabMetrics AI Platform &bull; Engineered by Chitransh Saxena & Team &bull; <span class="text-rose-400 font-mono">PATENT PENDING • REG US-2026-FABMETRICS-AI</span></div>
             <div>
                 Contact: <a href="mailto:chitranshsaxena18@gmail.com" class="text-cyan-400 underline">chitranshsaxena18@gmail.com</a> | +91 98765 43210 &bull; 
@@ -391,7 +587,14 @@
                 currentUser = JSON.parse(savedUser);
                 document.getElementById('landing-gateway').classList.add('hidden');
                 document.getElementById('app-workspace').classList.remove('hidden');
-                document.getElementById('user-display-name').innerText = `👤 ${currentUser.username} (${currentUser.role})`;
+                document.getElementById('user-display-name').innerText = `👤 ${currentUser.username}`;
+                
+                const titleEl = document.getElementById('home-welcome-title');
+                if (titleEl) {
+                    titleEl.innerText = `Welcome back to FabMetrics AI, ${currentUser.username}! 👋`;
+                }
+
+                switchMainTab('home'); // Default view on login is Home
                 initializeShowroom();
                 checkBackendConnection();
             } else {
@@ -446,8 +649,11 @@
             document.querySelectorAll('.main-view').forEach(view => view.classList.add('hidden'));
             document.querySelectorAll('.tab-link').forEach(btn => btn.classList.remove('tab-active'));
             
-            document.getElementById('view-' + viewKey).classList.remove('hidden');
-            document.getElementById('tab-btn-' + viewKey).classList.add('tab-active');
+            const targetView = document.getElementById('view-' + viewKey);
+            const targetBtn = document.getElementById('tab-btn-' + viewKey);
+            
+            if (targetView) targetView.classList.remove('hidden');
+            if (targetBtn) targetBtn.classList.add('tab-active');
             
             if (viewKey === 'history') {
                 loadHistoryData();
@@ -656,14 +862,14 @@
             try { 
                 const r = await fetch(`${API_URL}/model-info`); 
                 if (r.ok) { 
-                    backendStatus.innerText = "System Online"; 
-                    backendStatus.className = "text-sm font-mono px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20"; 
+                    backendStatus.innerText = "Online"; 
+                    backendStatus.className = "text-xs font-mono px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20"; 
                 } else {
                     throw new Error();
                 }
             } catch (err) { 
-                backendStatus.innerText = "Backend Offline"; 
-                backendStatus.className = "text-sm font-mono px-3 py-1 bg-rose-500/10 text-rose-400 rounded-full border border-rose-500/20"; 
+                backendStatus.innerText = "Offline"; 
+                backendStatus.className = "text-xs font-mono px-3 py-1 bg-rose-500/10 text-rose-400 rounded-full border border-rose-500/20"; 
             }
         }
         

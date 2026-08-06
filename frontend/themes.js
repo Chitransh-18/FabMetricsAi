@@ -206,12 +206,34 @@
     }
 
     // ---- Core theme logic -----------------------------------------------
+    function isLightColor(colorStr) {
+        if (!colorStr) return false;
+        let hex = colorStr.replace('#', '');
+        if (hex.startsWith('rgba') || hex.startsWith('rgb')) {
+            return colorStr.includes('255') || colorStr.includes('247') || colorStr.includes('253');
+        }
+        if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+        if (hex.length !== 6) return false;
+        const r = parseInt(hex.substring(0, 2), 16);
+        const g = parseInt(hex.substring(2, 4), 16);
+        const b = parseInt(hex.substring(4, 6), 16);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        return brightness > 140;
+    }
+
     function applyTheme(primary, secondary, bg, card) {
         document.documentElement.style.setProperty('--primary-color', primary);
         document.documentElement.style.setProperty('--secondary-color', secondary);
         document.documentElement.style.setProperty('--base-bg', bg);
         document.documentElement.style.setProperty('--card-bg', card);
+
+        const light = isLightColor(bg) || isLightColor(card);
+        document.documentElement.style.setProperty('--text-title', light ? '#0f172a' : '#ffffff');
+        document.documentElement.style.setProperty('--text-main', light ? '#1e293b' : '#f3f4f6');
+        document.documentElement.style.setProperty('--text-muted', light ? '#475569' : '#94a3b8');
+        document.documentElement.setAttribute('data-theme-mode', light ? 'light' : 'dark');
     }
+
 
     function syncColorField(id, value) {
         document.getElementById(`${id}-swatch`).style.background = value;
