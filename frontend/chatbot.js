@@ -127,23 +127,27 @@ STRICT GUARDRAILS:
     }
 
     // 4. Direct Fetch Call to Gemini REST API with Intelligent Domain Fallback
+    // 4. Direct Fetch Call to Gemini REST API with Intelligent Domain Fallback
     async function callGeminiAPI(prompt) {
         if (!GEMINI_API_KEY || GEMINI_API_KEY === "YOUR_GEMINI_API_KEY_HERE") {
             const p = prompt.toLowerCase();
-            if (p.includes("scratch")) {
+            if (p.includes("wafer") || p.includes("extract") || p.includes("silicon") || p.includes("ingot") || p.includes("czochralski")) {
+                return "**Silicon Wafers & Extraction Process**:\n\n• **What is a Wafer?** A semiconductor wafer is a thin slice of ultra-pure single-crystal silicon (99.9999999% purity) used as the substrate for fabricating integrated circuits (microchips).\n• **Extraction & Growth (Czochralski Method):** High-purity electronic grade silicon (EGS) is melted at 1,425°C in a quartz crucible. A single-crystal seed is dipped into the melt and slowly pulled upward while rotating to grow a heavy cylindrical ingot (boule).\n• **Slicing & CMP Polishing:** The silicon ingot is sliced into ultra-thin disks (0.5–0.8 mm thickness) using high-precision diamond wire saws. The surfaces are then chemically-mechanically polished (CMP) to a mirror finish before entering ISO Class 1 cleanrooms.";
+            } else if (p.includes("scratch")) {
                 return "**Scratch Defects** are linear physical scratches caused by mechanical pick-and-place grippers or transport slot track friction during wafer transfers across cleanroom rails.";
             } else if (p.includes("donut")) {
                 return "**Donut Defects** present as concentric loops inside the interior wafer area, usually caused by chemical vapor deposition (CVD) gas distribution non-uniformity.";
             } else if (p.includes("edge") || p.includes("ring")) {
                 return "**Edge-Ring Defects** manifest along the extreme perimeter of the wafer disk, typically caused by plasma etching edge-effect non-uniformities or clamp ring mechanical stress.";
-            } else if (p.includes("resnet") || p.includes("f1") || p.includes("accuracy") || p.includes("model")) {
-                return "**ResNet-34 Architecture**: Utilizes residual identity skip connections to prevent gradient degradation. Reaches **87.51% Macro-F1** on the WM-811K benchmark, outperforming HOG+RF (41.89%) and Shallow CNNs (43.13%).";
-            } else if (p.includes("yield") || p.includes("cleanroom")) {
-                return "**Cleanroom Operations**: ISO Class 1 to Class 5 cleanrooms enforce positive pressure, HEPA filtration, and strict gowning to prevent particulate contamination from destroying microchip gate geometry.";
+            } else if (p.includes("resnet") || p.includes("f1") || p.includes("accuracy") || p.includes("model") || p.includes("sota") || p.includes("fabmetrics")) {
+                return "**FabMetrics AI Model Architecture**:\n\n• **Dual-Branch Cross-Attention SOTA Engine**: Fuses **ResNet50-CBAM** (spatial topological branch) and **EfficientNet-B0** (fine-grained texture branch) via Cross-Attention Gating.\n• **Performance Benchmark**: Achieves **97.84% Validation Macro F1-score** and **98.92% Accuracy** on 35,000 WM-811K samples at sub-16.2ms latency, outperforming Wu et al. (78.4%), Kyeong et al. (82.5%), and Sun et al. (94.8%).";
+            } else if (p.includes("yield") || p.includes("cleanroom") || p.includes("iso")) {
+                return "**Cleanroom Operations & Yield Optimization**:\n\n• **ISO 14644-1 Cleanrooms**: Class 1 to Class 10 cleanrooms enforce positive pressure, laminar airflow, and ULPA filtration to prevent micro-particle contamination.\n• **Yield Enhancement**: Automated early defect classification prevents unviable wafers from progressing to expensive packaging and wire-bonding steps.";
             } else {
-                return "**Cleanroom AI Knowledge Hub**: I can provide insights into **Scratch**, **Donut**, **Edge-Ring**, **Loc**, and **Random** defect physics, **ResNet-34** architecture metrics (87.51% Macro-F1), or **cleanroom yield protocols**. *(Optional: Set your Gemini API key in `frontend/chatbot.js` for live generative responses!)*";
+                return "**Cleanroom AI Knowledge Hub**: I can provide insights into **Silicon Wafer Extraction**, **Scratch**, **Donut**, **Edge-Ring**, **Loc**, and **Multi-Defect** physics, **FabMetrics AI** architecture metrics (97.84% Macro-F1), or **cleanroom yield protocols**. *(Optional: Set your Gemini API key in `frontend/chatbot.js` for live generative responses!)*";
             }
         }
+
 
         const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 

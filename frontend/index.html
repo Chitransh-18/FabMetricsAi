@@ -848,18 +848,21 @@
 
         function getCleanroomTutorReply(prompt) {
             const p = prompt.toLowerCase();
-            if (p.includes("scratch")) {
+            if (p.includes("wafer") || p.includes("extract") || p.includes("silicon") || p.includes("ingot") || p.includes("czochralski")) {
+                return "<b>Silicon Wafers & Extraction Process</b>:<br><br>• <b>What is a Wafer?</b> A semiconductor wafer is an ultra-pure single-crystal silicon disk used as the substrate for microchips.<br>• <b>Czochralski Extraction:</b> High-purity silicon is melted at 1,425°C in a quartz crucible. A single-crystal seed is dipped into the melt and pulled upward to grow a cylindrical ingot.<br>• <b>Slicing & CMP Polishing:</b> Diamond wire saws slice the ingot into thin disks (0.7mm), which are polished to a mirror finish before entering cleanrooms.";
+            } else if (p.includes("scratch")) {
                 return "<b>Scratch Defects</b> form linear paths across dies, typically caused by robotic pick-and-place gripper friction or cassette rail contact.";
             } else if (p.includes("donut")) {
                 return "<b>Donut Defects</b> form concentric loops inside the wafer interior, caused by chemical vapor deposition (CVD) gas dispersion non-uniformities.";
             } else if (p.includes("edge")) {
                 return "<b>Edge-Ring Defects</b> hug the outer perimeter disk, caused by plasma etching edge-effect non-uniformities or wafer edge clamp stress.";
-            } else if (p.includes("model") || p.includes("metric") || p.includes("sota") || p.includes("97")) {
+            } else if (p.includes("model") || p.includes("metric") || p.includes("sota") || p.includes("97") || p.includes("fabmetrics")) {
                 return "Our <b>FabMetrics AI Model</b> fuses ResNet50-CBAM (spatial topological branch) with EfficientNet-B0 (texture branch) via Cross-Attention Gating, achieving <b>97.84% Macro F1</b> at 16.2ms latency!";
             } else {
-                return "I can explain cleanroom defect physics (Scratch, Donut, Edge-Ring, Loc, Center), ISO 14644-1 cleanroom standards, or our 97.84% SOTA model metrics! What would you like to explore?";
+                return "I can explain <b>Silicon Wafer Extraction</b>, cleanroom defect physics (Scratch, Donut, Edge-Ring, Loc, Center), ISO 14644-1 cleanroom standards, or our 97.84% SOTA model metrics! What would you like to explore?";
             }
         }
+
 
         // AUTHENTICATION & TAB NAVIGATION
         function checkAuthState() {
