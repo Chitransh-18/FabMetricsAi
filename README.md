@@ -1,4 +1,4 @@
-# WaferScan AI — Semiconductor Wafer Defect Detection System
+# FabMetricsAi — Semiconductor Wafer Defect Detection System
 
 WaferScan AI is an industrial-grade computer vision platform built for automated microchip quality control and semiconductor cleanroom yield analysis. It leverages a fine-tuned **ResNet-34** deep residual network to classify silicon wafer map defect patterns (Scratch, Donut, Edge-Ring, Edge-Loc, Loc, Center, Near-full, Random, None) with **87.51% Macro-F1** accuracy.
 
