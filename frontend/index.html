@@ -985,6 +985,15 @@
             await loginUser(username, password);
         }
 
+        function getAuthHeaders(extraHeaders = {}) {
+            const token = localStorage.getItem('fabmetrics_token');
+            const headers = { ...extraHeaders };
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+            return headers;
+        }
+
         async function loginUser(username, password) {
             const errDiv = document.getElementById('login-error');
             errDiv.classList.add('hidden');
@@ -997,6 +1006,9 @@
                 const data = await res.json();
                 if (res.ok && data.status === 'success') {
                     currentUser = data.user;
+                    if (data.token) {
+                        localStorage.setItem('fabmetrics_token', data.token);
+                    }
                     localStorage.setItem('fabmetrics_user', JSON.stringify(currentUser));
                     checkAuthState();
                 } else {
@@ -1011,6 +1023,7 @@
 
         function handleLogout() {
             localStorage.removeItem('fabmetrics_user');
+            localStorage.removeItem('fabmetrics_token');
             currentUser = null;
             checkAuthState();
         }
@@ -1043,7 +1056,7 @@
             try {
                 const userId = currentUser ? currentUser.id : null;
                 const url = userId ? `${API_URL}/api/history?user_id=${userId}` : `${API_URL}/api/history`;
-                const res = await fetch(url);
+                const res = await fetch(url, { headers: getAuthHeaders() });
                 if (!res.ok) return;
                 const data = await res.json();
                 const tbody = document.getElementById('history-table-body');
@@ -1129,7 +1142,7 @@
             for (let item of stagedFiles) {
                 if(item.processed) continue;
                 const fd = new FormData(); fd.append('file', item.file);
-                const res = await fetch(`${API_URL}/predict`, { method: 'POST', body: fd });
+                const res = await fetch(`${API_URL}/predict`, { method: 'POST', headers: getAuthHeaders(), body: fd });
                 if(res.ok) { executionResults[item.id] = await res.json(); item.processed = true; renderQueueUI(); selectQueueItem(item.id); }
             }
         });
@@ -1163,7 +1176,7 @@
             });
             const response = await fetch(`${API_URL}/generate-report`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
                 body: JSON.stringify({
                     results: records,
                     user: currentUser || { username: "admin", role: "Lead Semiconductor Engineer" }
@@ -1178,6 +1191,7 @@
                 a.click();
             }
         }
+
 
         async function checkBackendConnection() {
             try { 

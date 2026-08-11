@@ -22,14 +22,13 @@ os.environ["TMPDIR"] = "D:/Web Dev/FabMetrics_AI/cache/tmp"
 os.environ["TEMP"] = "D:/Web Dev/FabMetrics_AI/cache/tmp"
 os.environ["TMP"] = "D:/Web Dev/FabMetrics_AI/cache/tmp"
 
-
 import torch
 import torch.nn as nn
 from torchvision import transforms
 from PIL import Image
 import numpy as np
 
-from fastapi import FastAPI, File, HTTPException, UploadFile, Body, Depends
+from fastapi import FastAPI, File, HTTPException, UploadFile, Body, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -40,6 +39,8 @@ from inference.model import build_model, load_model, resolve_device
 from inference.preprocess import localize_defects, wafer_map_preview
 from inference.database import (
     authenticate_user,
+    create_session,
+    get_user_by_token,
     save_inspection_record,
     get_user_inspections,
     get_inspection_by_id,
@@ -48,9 +49,9 @@ from inference.database import (
 from inference.report import generate_comprehensive_pdf_report
 
 APP_TITLE = "FabMetrics AI — Industrial Wafer Defect & Yield Platform"
-
 MODEL_PATH = DEFAULT_WEIGHTS_PATH
 IMAGE_SIZE = 224
+MAX_UPLOAD_SIZE = 10 * 1024 * 1024  # 10 MB Limit
 DEVICE = resolve_device()
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
@@ -109,18 +110,35 @@ except Exception as e:
 
 
 # ==========================================================
-# Authentication & Database Endpoints
+# Authentication & Session Token Dependency
 # ==========================================================
+async def get_current_user(authorization: Optional[str] = Header(None)) -> Optional[Dict[str, Any]]:
+    """Validate bearer session token from Request Authorization header."""
+    if authorization and authorization.startswith("Bearer "):
+        token = authorization.split("Bearer ", 1)[1].strip()
+        user = get_user_by_token(token)
+        if user:
+            return user
+    return None
+
 @app.post("/api/auth/login")
 async def login(payload: LoginRequest):
     user = authenticate_user(payload.username, payload.password)
     if not user:
         raise HTTPException(status_code=401, detail="Invalid username or password credentials.")
-    return {"status": "success", "user": user}
+    token = create_session(user["id"])
+    return {"status": "success", "user": user, "token": token}
 
 @app.get("/api/history")
-async def get_history(user_id: Optional[int] = None, limit: int = 50):
-    records = get_user_inspections(user_id=user_id, limit=limit)
+async def get_history(
+    user_id: Optional[int] = None,
+    limit: int = 50,
+    current_user: Optional[Dict[str, Any]] = Depends(get_current_user)
+):
+    target_user_id = user_id
+    if current_user and not user_id:
+        target_user_id = current_user["id"]
+    records = get_user_inspections(user_id=target_user_id, limit=limit)
     return {"status": "success", "count": len(records), "records": records}
 
 @app.get("/api/analytics/db-stats")
@@ -159,7 +177,7 @@ async def get_baselines():
 
 
 # ==========================================================
-# Inference Core Engine
+# Inference Core Engine with Input Validation & Size Limit
 # ==========================================================
 def process_image_bytes(image_bytes: bytes, filename: str = "wafer_upload.png", user_id: int = 1, username: str = "admin") -> PredictionResponse:
     try:
@@ -214,16 +232,28 @@ def process_image_bytes(image_bytes: bytes, filename: str = "wafer_upload.png", 
 
 @app.post("/predict", response_model=PredictionResponse)
 @app.post("/api/predict/upload", response_model=PredictionResponse)
-async def predict_file(file: UploadFile = File(...)):
+async def predict_file(
+    file: UploadFile = File(...),
+    current_user: Optional[Dict[str, Any]] = Depends(get_current_user)
+):
     try:
         image_bytes = await file.read()
-        return process_image_bytes(image_bytes, filename=file.filename or "wafer_upload.png")
+        if len(image_bytes) > MAX_UPLOAD_SIZE:
+            raise HTTPException(status_code=413, detail="File size exceeds maximum allowed 10MB limit.")
+        user_id = current_user["id"] if current_user else 1
+        username = current_user["username"] if current_user else "admin"
+        return process_image_bytes(image_bytes, filename=file.filename or "wafer_upload.png", user_id=user_id, username=username)
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Inference error encountered: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/predict")
-async def predict_json(payload: dict = Body(...)):
+async def predict_json(
+    payload: dict = Body(...),
+    current_user: Optional[Dict[str, Any]] = Depends(get_current_user)
+):
     try:
         wafer_map = payload.get("wafer_map")
         if wafer_map is None:
@@ -239,7 +269,9 @@ async def predict_json(payload: dict = Body(...)):
         buf = io.BytesIO()
         img.save(buf, format="PNG")
         
-        resp = process_image_bytes(buf.getvalue(), filename="matrix_wafer_map.png")
+        user_id = current_user["id"] if current_user else 1
+        username = current_user["username"] if current_user else "admin"
+        resp = process_image_bytes(buf.getvalue(), filename="matrix_wafer_map.png", user_id=user_id, username=username)
         resp.wafer_map_shape = list(arr.shape)
         return resp
     except HTTPException:
@@ -253,10 +285,13 @@ async def predict_json(payload: dict = Body(...)):
 # 4-Page Branded PDF Yield Report Generator
 # ==========================================================
 @app.post("/generate-report")
-async def generate_report(payload: dict = Body(...)):
+async def generate_report(
+    payload: dict = Body(...),
+    current_user: Optional[Dict[str, Any]] = Depends(get_current_user)
+):
     try:
         results = payload.get("results", [])
-        user_info = payload.get("user", {"username": "admin", "role": "Lead Cleanroom Engineer"})
+        user_info = current_user or payload.get("user", {"username": "admin", "role": "Lead Cleanroom Engineer"})
         
         if not results:
             results = [{
@@ -304,16 +339,3 @@ async def download_history_report(record_id: int):
     except Exception as e:
         logger.error(f"Download history report error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
-
-
-
-# ==========================================================
-# Static Files & Frontend Routing
-# ==========================================================
-frontend_dir = Path(__file__).parent / "frontend"
-if frontend_dir.exists():
-    app.mount("/", StaticFiles(directory=str(frontend_dir), html=True), name="frontend")
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("app:app", host="127.0.0.1", port=8000, reload=False)
