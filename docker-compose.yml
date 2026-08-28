@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  fabmetrics-ai:
+    build: .
+    container_name: fabmetrics_ai_container
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - HOST=0.0.0.0
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - SECRET_KEY=${SECRET_KEY:-fabmetrics_super_secret_jwt_key_2026_cleanroom_yield}
+    restart: unless-stopped
+    volumes:
+      - fabmetrics_data:/app/data
+
+volumes:
+  fabmetrics_data:

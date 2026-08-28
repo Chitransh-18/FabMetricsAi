@@ -14,6 +14,12 @@ import base64
 from pathlib import Path
 from typing import Dict, List, Any, Optional
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except Exception:
+    pass
+
 # Bypass local thread locks on machine execution lines
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 os.environ["TORCH_HOME"] = "D:/Web Dev/FabMetrics_AI/cache/torch"
@@ -21,6 +27,7 @@ os.environ["HF_HOME"] = "D:/Web Dev/FabMetrics_AI/cache/huggingface"
 os.environ["TMPDIR"] = "D:/Web Dev/FabMetrics_AI/cache/tmp"
 os.environ["TEMP"] = "D:/Web Dev/FabMetrics_AI/cache/tmp"
 os.environ["TMP"] = "D:/Web Dev/FabMetrics_AI/cache/tmp"
+
 
 import torch
 import torch.nn as nn
@@ -70,6 +77,10 @@ app.add_middleware(
 class LoginRequest(BaseModel):
     username: str
     password: str
+
+class ChatRequest(BaseModel):
+    message: str
+
 
 class PredictionResponse(BaseModel):
     predicted_class: str
@@ -145,6 +156,60 @@ async def get_history(
 async def get_db_stats():
     stats = get_database_analytics()
     return {"status": "success", "analytics": stats}
+
+@app.post("/api/chat")
+async def chat_endpoint(payload: ChatRequest):
+    gemini_key = os.getenv("GEMINI_API_KEY", "").strip()
+    user_msg = payload.message.strip()
+    if not user_msg:
+        raise HTTPException(status_code=400, detail="Empty chat message.")
+
+    if gemini_key and gemini_key != "YOUR_GEMINI_API_KEY_HERE":
+        try:
+            import urllib.request
+            import json
+            endpoint = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={gemini_key}"
+            sys_inst = (
+                "You are the Cleanroom AI Tutor, an expert assistant inside FabMetrics AI platform. "
+                "Answer questions about semiconductor fab, cleanrooms, wafer defect classification, "
+                "ResNet50-CBAM + EfficientNet-B0 SOTA model (97.84% Macro F1), and OpenCV defect localization accurately."
+            )
+            req_body = json.dumps({
+                "contents": [{
+                    "role": "user",
+                    "parts": [{"text": sys_inst}, {"text": f"User Question: {user_msg}"}]
+                }]
+            }).encode("utf-8")
+            
+            req = urllib.request.Request(endpoint, data=req_body, headers={"Content-Type": "application/json"})
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                res_data = json.loads(resp.read().decode("utf-8"))
+                reply = res_data.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "")
+                if reply:
+                    return {"status": "success", "source": "gemini-api", "reply": reply}
+        except Exception as e:
+            logger.warning(f"Gemini API proxy fallback triggered: {str(e)}")
+
+    reply = get_offline_cleanroom_reply(user_msg)
+    return {"status": "success", "source": "knowledge-base", "reply": reply}
+
+def get_offline_cleanroom_reply(prompt: str) -> str:
+    p = prompt.lower()
+    if any(k in p for k in ["wafer", "extract", "silicon", "ingot", "czochralski"]):
+        return "**Silicon Wafers & Extraction Process**:\n\n• **What is a Wafer?** A semiconductor wafer is a thin slice of ultra-pure single-crystal silicon (99.9999999% purity) used as the substrate for microchips.\n• **Czochralski Extraction:** High-purity electronic grade silicon (EGS) is melted at 1,425°C in a quartz crucible. A single-crystal seed is dipped into the melt and slowly pulled upward while rotating to grow a heavy cylindrical ingot.\n• **Slicing & CMP Polishing:** The ingot is sliced into ultra-thin disks (0.7mm) using diamond wire saws and polished to a mirror finish before entering cleanrooms."
+    elif "scratch" in p:
+        return "**Scratch Defects** are linear physical scratches caused by mechanical pick-and-place grippers or transport slot track friction during wafer transfers."
+    elif "donut" in p:
+        return "**Donut Defects** present as concentric loops inside the interior wafer area, usually caused by chemical vapor deposition (CVD) gas distribution non-uniformity."
+    elif "edge" in p or "ring" in p:
+        return "**Edge-Ring Defects** manifest along the outer perimeter disk, caused by plasma etching edge-effect non-uniformities or clamp ring stress."
+    elif any(k in p for k in ["model", "metric", "sota", "resnet", "efficientnet", "fabmetrics", "accuracy"]):
+        return "**FabMetrics AI Model Architecture**:\n\n• **Dual-Branch Cross-Attention SOTA Engine**: Fuses **ResNet50-CBAM** (spatial topological branch) and **EfficientNet-B0** (fine-grained texture branch) via Cross-Attention Gating.\n• **Performance Benchmark**: Achieves **97.84% Validation Macro F1-score** and **98.92% Accuracy** on 35,000 WM-811K samples at sub-16.2ms latency!"
+    elif any(k in p for k in ["yield", "cleanroom", "iso"]):
+        return "**Cleanroom Operations & Yield Optimization**:\n\n• **ISO 14644-1 Cleanrooms**: Enforce positive pressure, laminar airflow, and ULPA filtration to prevent micro-particle contamination.\n• **Yield Enhancement**: Automated early defect classification prevents defective wafers from consuming expensive packaging and wire-bonding resources."
+    else:
+        return "**Cleanroom AI Knowledge Hub**: I can provide insights into **Silicon Wafer Extraction**, **Scratch**, **Donut**, **Edge-Ring**, **Loc**, and **Multi-Defect** physics, **FabMetrics AI** architecture metrics (97.84% Macro-F1), or **cleanroom yield protocols**."
+
 
 
 # ==========================================================
