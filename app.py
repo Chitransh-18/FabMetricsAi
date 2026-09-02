@@ -74,6 +74,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+frontend_dir = Path("frontend")
+if frontend_dir.exists():
+    app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
+
+@app.get("/")
+async def serve_index():
+    index_path = Path("frontend/index.html")
+    if index_path.exists():
+        return FileResponse(index_path)
+    return {"status": "success", "message": "FabMetrics AI Platform API Operational."}
+
+
 class LoginRequest(BaseModel):
     username: str
     password: str
@@ -404,3 +416,8 @@ async def download_history_report(record_id: int):
     except Exception as e:
         logger.error(f"Download history report error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="127.0.0.1", port=8000)
+
