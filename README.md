@@ -8,6 +8,14 @@ Powered by a novel **Dual-Branch Cross-Attention Architecture (ResNet50-CBAM + E
 
 ---
 
+## 📊 Benchmark Dataset
+
+The model is trained and benchmarked on the equalized **WM-811K Balanced & Multi-Defect Wafer Map Dataset** published on Kaggle:
+
+👉 **[Kaggle Dataset: WM-811K Balanced & Multi-Defect Wafer Map Dataset](https://www.kaggle.com/datasets/chitranshsaxena711/wm-811k-balanced-and-multi-defect-wafer-map-dataset)** *(Published by Chitransh Saxena)*
+
+---
+
 ## 🌟 Featured Highlights
 
 - 🔬 **97.84% SOTA Macro F1-Score**: Outperforms Wu et al. (78.4%), Kyeong & Kim (82.5%), Saqlain et al. (87.5%), and Sun et al. (94.8%) IEEE benchmarks.
@@ -29,8 +37,8 @@ Powered by a novel **Dual-Branch Cross-Attention Architecture (ResNet50-CBAM + E
 - **Deep Learning & CV**: PyTorch, ResNet50-CBAM, EfficientNet-B0, OpenCV, Focal Loss, SWA
 - **Backend & DB**: Python, FastAPI, Uvicorn, SQLite3 (WAL Mode), ReportLab PDF Engine
 - **Security & Auth**: PBKDF2-SHA256 Hashing, Bearer Session Tokens, Streaming File Limit Guards
-- **Frontend**: HTML5, Vanilla JavaScript (ES6+), Vanilla CSS (Glassmorphism), TailwindCSS
-- **Dataset**: WM-811K Semiconductor Wafer Benchmark (35,000 Equalized Samples)
+- **Frontend**: HTML5, Vanilla JavaScript (ES6+), Vanilla CSS (Glassmorphism), TailwindCSS, Geist Font
+- **Dataset**: [WM-811K Balanced & Multi-Defect Dataset on Kaggle](https://www.kaggle.com/datasets/chitranshsaxena711/wm-811k-balanced-and-multi-defect-wafer-map-dataset) *(Published by Chitransh Saxena)*
 
 ---
 
@@ -40,6 +48,7 @@ Powered by a novel **Dual-Branch Cross-Attention Architecture (ResNet50-CBAM + E
 ├── app.py                     # Main FastAPI Server, Auth Routing & 10MB File Guard
 ├── wafer_dataset.py           # PyTorch Dataset Loader & Preprocessing Pipeline
 ├── train.py                   # Model Training Script with Weighted Sampler & Focal Loss
+├── train_100_epochs_f1_graph.py # 100-Epoch Training & F1 Saturation Graph Generator
 ├── test_inference.py          # Standalone Inference Diagnostic Verification Script
 ├── make_test_images.py        # Synthetic Evaluation Wafer Map Generator
 ├── baseline_resnet34.pth      # Model Checkpoint Weights
@@ -114,6 +123,6 @@ Open your browser and navigate to:
 
 ## 📜 License & Credits
 
-Engineered by Chitransh Saxena & Team.
-Dataset reference: WM-811K Wafer Map Dataset.
-Patent Registration: `REG US-2026-FABMETRICS-AI`.
+- **Lead Engineer & Publisher**: Chitransh Saxena & Team
+- **Official Dataset**: [WM-811K Balanced & Multi-Defect Wafer Map Dataset on Kaggle](https://www.kaggle.com/datasets/chitranshsaxena711/wm-811k-balanced-and-multi-defect-wafer-map-dataset) *(Published by Chitransh Saxena)*
+- **Patent Registration**: `REG US-2026-FABMETRICS-AI`
