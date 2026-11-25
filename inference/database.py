@@ -127,7 +127,7 @@ def authenticate_user(username: str, password_raw: str) -> Optional[Dict[str, An
 
     cursor.execute(
         "SELECT id, username, email, password_hash, role, created_at FROM users WHERE username = ? OR email = ?",
-        (username, username)
+        (username.strip(), username.strip().lower())
     )
     row = cursor.fetchone()
     conn.close()
@@ -137,6 +137,56 @@ def authenticate_user(username: str, password_raw: str) -> Optional[Dict[str, An
         del user_dict["password_hash"]
         return user_dict
     return None
+
+def register_user(username: str, email: str, password_raw: str, role: str = "Cleanroom Yield Analyst") -> Dict[str, Any]:
+    """
+    Register a new user account with hashed credentials.
+    Enforces uniqueness of username and email.
+    """
+    clean_username = username.strip()
+    clean_email = email.strip().lower()
+
+    if len(clean_username) < 3:
+        raise ValueError("Username must be at least 3 characters long.")
+    if len(password_raw) < 6:
+        raise ValueError("Password must be at least 6 characters long.")
+    if "@" not in clean_email or "." not in clean_email:
+        raise ValueError("Please provide a valid corporate or academic email address.")
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    # Check for existing username
+    cursor.execute("SELECT id FROM users WHERE LOWER(username) = LOWER(?)", (clean_username,))
+    if cursor.fetchone():
+        conn.close()
+        raise ValueError(f"Username '{clean_username}' is already registered. Please choose another username.")
+
+    # Check for existing email
+    cursor.execute("SELECT id FROM users WHERE LOWER(email) = LOWER(?)", (clean_email,))
+    if cursor.fetchone():
+        conn.close()
+        raise ValueError(f"Email '{clean_email}' is already associated with an existing account.")
+
+    # Hash password with secure PBKDF2 salt
+    pwd_hash = hash_password(password_raw)
+    created_at = time.strftime("%Y-%m-%d %H:%M:%S")
+
+    cursor.execute(
+        "INSERT INTO users (username, email, password_hash, role, created_at) VALUES (?, ?, ?, ?, ?)",
+        (clean_username, clean_email, pwd_hash, role, created_at)
+    )
+    new_user_id = cursor.lastrowid
+    conn.commit()
+    conn.close()
+
+    return {
+        "id": new_user_id,
+        "username": clean_username,
+        "email": clean_email,
+        "role": role,
+        "created_at": created_at
+    }
 
 def create_session(user_id: int, duration_seconds: int = 86400 * 7) -> str:
     """Create a persistent session token for authenticated user."""
@@ -211,26 +261,23 @@ def save_inspection_record(
     return rec_id
 
 def get_user_inspections(user_id: Optional[int] = None, limit: int = 50) -> List[Dict[str, Any]]:
-    """Fetch past inspection history from database."""
+    """
+    Fetch past inspection history strictly for the authenticated user.
+    Enforces privacy boundary: Users cannot view scans conducted by other accounts.
+    """
+    if not user_id:
+        return []
+
     conn = get_connection()
     cursor = conn.cursor()
 
-    if user_id:
-        cursor.execute(
-            """
-            SELECT id, user_id, username, filename, predicted_class, confidence, defects_count, bounding_boxes_json, timestamp 
-            FROM inspection_records WHERE user_id = ? ORDER BY id DESC LIMIT ?
-            """,
-            (user_id, limit)
-        )
-    else:
-        cursor.execute(
-            """
-            SELECT id, user_id, username, filename, predicted_class, confidence, defects_count, bounding_boxes_json, timestamp 
-            FROM inspection_records ORDER BY id DESC LIMIT ?
-            """,
-            (limit,)
-        )
+    cursor.execute(
+        """
+        SELECT id, user_id, username, filename, predicted_class, confidence, defects_count, bounding_boxes_json, timestamp 
+        FROM inspection_records WHERE user_id = ? ORDER BY id DESC LIMIT ?
+        """,
+        (user_id, limit)
+    )
 
     rows = cursor.fetchall()
     conn.close()

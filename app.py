@@ -36,7 +36,7 @@ from torchvision import transforms
 from PIL import Image
 import numpy as np
 
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile, Body, Depends, Header, Request
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile, Body, Depends, Header, Request, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, FileResponse, HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -49,6 +49,7 @@ from inference.preprocess import localize_defects, wafer_map_preview
 from inference.database import (
     init_db,
     authenticate_user,
+    register_user,
     create_session,
     get_user_by_token,
     save_inspection_record,
@@ -152,6 +153,12 @@ class LoginRequest(BaseModel):
     username: str
     password: str
 
+class RegisterRequest(BaseModel):
+    username: str
+    email: str
+    password: str
+    role: Optional[str] = "Cleanroom Yield Analyst"
+
 class ChatRequest(BaseModel):
     message: str
 
@@ -217,17 +224,43 @@ async def login(payload: LoginRequest):
     token = create_session(user["id"])
     return {"status": "success", "user": user, "token": token}
 
+@app.post("/api/auth/register")
+async def register(payload: RegisterRequest):
+    """Register a new cleanroom user account with cloud persistence."""
+    try:
+        user = register_user(
+            username=payload.username,
+            email=payload.email,
+            password_raw=payload.password,
+            role=payload.role or "Cleanroom Yield Analyst"
+        )
+        token = create_session(user["id"])
+        return {"status": "success", "user": user, "token": token}
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        logger.error(f"User registration error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to register user account.")
+
 @app.get("/api/history")
 async def get_history(
-    user_id: Optional[int] = None,
     limit: int = 50,
     current_user: Optional[Dict[str, Any]] = Depends(get_current_user)
 ):
-    target_user_id = user_id
-    if current_user and not user_id:
-        target_user_id = current_user["id"]
-    records = get_user_inspections(user_id=target_user_id, limit=limit)
-    return {"status": "success", "count": len(records), "records": records}
+    """
+    Fetch wafer inspection history strictly for the authenticated user.
+    Prevents cross-tenant data leakage: users can only view their own scan history.
+    """
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Authentication required to access inspection history.")
+    
+    records = get_user_inspections(user_id=current_user["id"], limit=limit)
+    return {
+        "status": "success",
+        "count": len(records),
+        "records": records,
+        "user": current_user["username"]
+    }
 
 @app.get("/api/analytics/db-stats")
 async def get_db_stats():
@@ -523,11 +556,36 @@ async def generate_report(
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/history/download-report/{record_id}")
-async def download_history_report(record_id: int):
+async def download_history_report(
+    record_id: int,
+    token: Optional[str] = Query(None),
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Download PDF report for a past inspection record.
+    Strict multi-tenant security: Users can only download reports of their own wafer scans.
+    """
     try:
+        active_token = None
+        if authorization and authorization.startswith("Bearer "):
+            active_token = authorization.split("Bearer ", 1)[1].strip()
+        elif token:
+            active_token = token
+        
+        user = get_user_by_token(active_token) if active_token else None
+        if not user:
+            raise HTTPException(status_code=401, detail="Authentication required to download inspection report. Please log in.")
+
         rec = get_inspection_by_id(record_id)
         if not rec:
             raise HTTPException(status_code=404, detail=f"Inspection record #{record_id} not found.")
+
+        # Cross-user isolation check: prevent User A from accessing User B's reports
+        if rec["user_id"] != user["id"] and user.get("role") != "Lead Semiconductor Engineer":
+            raise HTTPException(
+                status_code=403,
+                detail="Access denied: You are not authorized to view or download other engineers' wafer inspection reports."
+            )
 
         pdf_bytes = generate_comprehensive_pdf_report(
             results=[{
@@ -537,7 +595,7 @@ async def download_history_report(record_id: int):
                 "bounding_boxes": rec.get("bounding_boxes", []),
                 "image_b64": rec.get("image_b64", "")
             }],
-            user_info={"username": rec["username"], "role": "Cleanroom Engineer"}
+            user_info={"username": rec["username"], "role": user.get("role", "Cleanroom Engineer")}
         )
         return StreamingResponse(
             io.BytesIO(pdf_bytes),

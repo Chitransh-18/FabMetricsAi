@@ -166,45 +166,109 @@
                 </div>
             </div>
 
-            <!-- Right Authentication Login Gateway Card -->
+            <!-- Right Authentication Login / Register Gateway Card -->
             <div class="lg:col-span-5 glass-panel p-6 sm:p-8 shadow-2xl relative">
-                <div class="text-center mb-6">
-                    <h3 class="text-xl font-bold text-white">Cleanroom Profile Authentication</h3>
-                    <p class="text-xs text-slate-400 mt-1">Log in to access your private inspection research & PDF reports.</p>
-                </div>
-
-                <!-- 1-Click Quick Demo Login Buttons -->
-                <div class="space-y-2 mb-6">
-                    <button onclick="quickLogin('admin', 'password123')" class="w-full py-2.5 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 text-blue-300 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-2">
-                        <span>👤 Demo 1-Click Login: <b>Lead Engineer (admin)</b></span>
+                <!-- Auth Mode Tabs (Sign In vs Register) -->
+                <div class="flex items-center justify-center p-1 bg-slate-950/80 rounded-2xl border border-white/10 mb-6">
+                    <button id="auth-tab-signin" type="button" onclick="switchAuthMode('signin')" class="flex-1 py-2 text-xs font-bold rounded-xl transition-all bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-md">
+                        🔐 Sign In
                     </button>
-                    <button onclick="quickLogin('engineer', 'cleanroom2026')" class="w-full py-2.5 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-300 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-2">
-                        <span>🔬 Demo 1-Click Login: <b>Yield Analyst (engineer)</b></span>
+                    <button id="auth-tab-register" type="button" onclick="switchAuthMode('register')" class="flex-1 py-2 text-xs font-bold rounded-xl transition-all text-slate-400 hover:text-white">
+                        ✨ Create Account
                     </button>
                 </div>
 
-                <div class="relative flex py-2 items-center mb-6">
-                    <div class="flex-grow border-t border-white/10"></div>
-                    <span class="flex-shrink mx-4 text-xs text-slate-500 uppercase tracking-widest font-mono">Or Manual Login</span>
-                    <div class="flex-grow border-t border-white/10"></div>
-                </div>
-
-                <form onsubmit="handleManualLogin(event)" class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Username / Email</label>
-                        <input type="text" id="login-username" value="admin" required class="w-full px-4 py-2.5 bg-slate-950 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Password</label>
-                        <input type="password" id="login-password" value="password123" required class="w-full px-4 py-2.5 bg-slate-950 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400">
+                <!-- 1. SIGN IN FORM -->
+                <div id="auth-box-signin">
+                    <div class="text-center mb-5">
+                        <h3 class="text-lg font-bold text-white">Cleanroom Profile Authentication</h3>
+                        <p class="text-xs text-slate-400 mt-1">Sign in from any device to access your private inspection history & reports.</p>
                     </div>
 
-                    <div id="login-error" class="hidden text-xs text-rose-400 font-semibold text-center bg-rose-500/10 p-2 rounded-lg border border-rose-500/20"></div>
+                    <form onsubmit="handleManualLogin(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Username / Email</label>
+                            <input type="text" id="login-username" placeholder="Enter username or email" required class="w-full px-4 py-2.5 bg-slate-950 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400 transition-colors">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Password</label>
+                            <input type="password" id="login-password" placeholder="Enter your password" required class="w-full px-4 py-2.5 bg-slate-950 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400 transition-colors">
+                        </div>
 
-                    <button type="submit" class="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white rounded-xl text-sm font-bold uppercase tracking-wider shadow-lg shadow-cyan-500/20 transition-all">
-                        Authenticate & Enter Cleanroom Console
-                    </button>
-                </form>
+                        <div id="login-error" class="hidden text-xs text-rose-400 font-semibold text-center bg-rose-500/10 p-2.5 rounded-lg border border-rose-500/20"></div>
+
+                        <button type="submit" id="btn-submit-login" class="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white rounded-xl text-sm font-bold uppercase tracking-wider shadow-lg shadow-cyan-500/20 transition-all">
+                            Authenticate & Enter Cleanroom Console
+                        </button>
+                    </form>
+
+                    <!-- Optional Quick Demo Credentials Helper Accordion -->
+                    <div class="mt-5 pt-4 border-t border-white/5">
+                        <details class="text-xs text-slate-400 group">
+                            <summary class="cursor-pointer hover:text-cyan-300 font-semibold flex items-center justify-between select-none">
+                                <span>🔑 Quick Demo Profiles (Optional)</span>
+                                <span class="text-[10px] text-slate-500 group-open:rotate-180 transition-transform">▼</span>
+                            </summary>
+                            <div class="grid grid-cols-2 gap-2 mt-3">
+                                <button type="button" onclick="quickLogin('admin', 'password123')" class="py-2 px-2 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 text-blue-300 rounded-lg text-[11px] font-bold text-center transition-all">
+                                    👤 Admin Profile
+                                </button>
+                                <button type="button" onclick="quickLogin('engineer', 'cleanroom2026')" class="py-2 px-2 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-300 rounded-lg text-[11px] font-bold text-center transition-all">
+                                    🔬 Engineer Profile
+                                </button>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+
+                <!-- 2. REGISTER / SIGN UP FORM -->
+                <div id="auth-box-register" class="hidden">
+                    <div class="text-center mb-5">
+                        <h3 class="text-lg font-bold text-white">Create Cleanroom Cloud Account</h3>
+                        <p class="text-xs text-slate-400 mt-1">Get dedicated, multi-device cloud storage for your wafer inspection scans.</p>
+                    </div>
+
+                    <form onsubmit="handleRegister(event)" class="space-y-3.5">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Username</label>
+                            <input type="text" id="reg-username" placeholder="Choose a username (e.g. alex_chen)" required minlength="3" class="w-full px-4 py-2 bg-slate-950 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400 transition-colors">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Corporate / Lab Email</label>
+                            <input type="email" id="reg-email" placeholder="name@fab.com or university email" required class="w-full px-4 py-2 bg-slate-950 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400 transition-colors">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Cleanroom Engineering Role</label>
+                            <select id="reg-role" class="w-full px-4 py-2 bg-slate-950 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400 transition-colors">
+                                <option value="Cleanroom Yield Analyst" selected>Cleanroom Yield Analyst</option>
+                                <option value="Semiconductor Process Engineer">Semiconductor Process Engineer</option>
+                                <option value="Photolithography Specialist">Photolithography Specialist</option>
+                                <option value="Quality Assurance Auditor">Quality Assurance Auditor</option>
+                                <option value="Fab R&D Researcher">Fab R&D Researcher</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Password</label>
+                                <input type="password" id="reg-password" placeholder="Min 6 chars" required minlength="6" class="w-full px-3 py-2 bg-slate-950 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400 transition-colors">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Confirm Password</label>
+                                <input type="password" id="reg-password-confirm" placeholder="Re-type password" required minlength="6" class="w-full px-3 py-2 bg-slate-950 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400 transition-colors">
+                            </div>
+                        </div>
+
+                        <div id="register-error" class="hidden text-xs text-rose-400 font-semibold text-center bg-rose-500/10 p-2.5 rounded-lg border border-rose-500/20"></div>
+
+                        <button type="submit" id="btn-submit-register" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-cyan-500 hover:from-emerald-500 hover:to-cyan-400 text-white rounded-xl text-sm font-bold uppercase tracking-wider shadow-lg shadow-emerald-500/20 transition-all">
+                            ✨ Create Account & Enter Console
+                        </button>
+                    </form>
+
+                    <div class="mt-4 p-2.5 bg-cyan-950/30 rounded-xl border border-cyan-500/20 text-center">
+                        <span class="text-[11px] text-cyan-300 font-mono">🔒 Multi-tenant cloud isolation guaranteed. Your inspection data and PDF reports are strictly private.</span>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1243,6 +1307,92 @@
 
 
         // AUTHENTICATION & TAB NAVIGATION
+        function switchAuthMode(mode) {
+            const boxSignin = document.getElementById('auth-box-signin');
+            const boxRegister = document.getElementById('auth-box-register');
+            const tabSignin = document.getElementById('auth-tab-signin');
+            const tabRegister = document.getElementById('auth-tab-register');
+            const loginErr = document.getElementById('login-error');
+            const regErr = document.getElementById('register-error');
+            if (loginErr) loginErr.classList.add('hidden');
+            if (regErr) regErr.classList.add('hidden');
+
+            if (mode === 'register') {
+                if (boxSignin) boxSignin.classList.add('hidden');
+                if (boxRegister) boxRegister.classList.remove('hidden');
+                if (tabSignin) tabSignin.className = "flex-1 py-2 text-xs font-bold rounded-xl transition-all text-slate-400 hover:text-white";
+                if (tabRegister) tabRegister.className = "flex-1 py-2 text-xs font-bold rounded-xl transition-all bg-gradient-to-r from-emerald-600 to-cyan-500 text-white shadow-md";
+            } else {
+                if (boxRegister) boxRegister.classList.add('hidden');
+                if (boxSignin) boxSignin.classList.remove('hidden');
+                if (tabRegister) tabRegister.className = "flex-1 py-2 text-xs font-bold rounded-xl transition-all text-slate-400 hover:text-white";
+                if (tabSignin) tabSignin.className = "flex-1 py-2 text-xs font-bold rounded-xl transition-all bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-md";
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const regErr = document.getElementById('register-error');
+            if (regErr) regErr.classList.add('hidden');
+
+            const username = document.getElementById('reg-username').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const role = document.getElementById('reg-role').value;
+            const password = document.getElementById('reg-password').value;
+            const confirm = document.getElementById('reg-password-confirm').value;
+
+            if (password !== confirm) {
+                if (regErr) {
+                    regErr.innerText = "Passwords do not match. Please verify and retry.";
+                    regErr.classList.remove('hidden');
+                }
+                return;
+            }
+
+            const btn = document.getElementById('btn-submit-register');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerText = "Creating Cleanroom Account...";
+            }
+
+            try {
+                const res = await fetch(`${API_URL}/api/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password, role })
+                });
+                const data = await res.json();
+                if (res.ok && data.status === 'success') {
+                    currentUser = data.user;
+                    if (data.token) {
+                        localStorage.setItem('fabmetrics_token', data.token);
+                    }
+                    localStorage.setItem('fabmetrics_user', JSON.stringify(currentUser));
+                    checkAuthState();
+                    showSuccessToast("Account Created", `Welcome to FabMetrics Cleanroom, ${currentUser.username}!`);
+                } else {
+                    const msg = data.detail || "Registration failed. Please check inputs.";
+                    if (regErr) {
+                        regErr.innerText = msg;
+                        regErr.classList.remove('hidden');
+                    }
+                    showErrorToast("Registration Error", msg);
+                }
+            } catch (err) {
+                const connErr = "Backend server unreachable. Ensure API is running.";
+                if (regErr) {
+                    regErr.innerText = connErr;
+                    regErr.classList.remove('hidden');
+                }
+                showErrorToast("Network Error", connErr);
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerText = "✨ Create Account & Enter Console";
+                }
+            }
+        }
+
         function checkAuthState() {
             const savedUser = localStorage.getItem('fabmetrics_user');
             if (savedUser) {
@@ -1375,8 +1525,8 @@
 
         async function loadHistoryData() {
             try {
-                const userId = currentUser ? currentUser.id : null;
-                const url = userId ? `${API_URL}/api/history?user_id=${userId}` : `${API_URL}/api/history`;
+                const token = localStorage.getItem('fabmetrics_token') || '';
+                const url = `${API_URL}/api/history`;
                 const res = await fetch(url, { headers: getAuthHeaders() });
                 const tbody = document.getElementById('history-table-body');
                 if (!res.ok) {
@@ -1418,7 +1568,7 @@
                             <td class="py-3 px-4 text-center">${r.defects_count}</td>
                             <td class="py-3 px-4 text-center text-slate-400">${escapeHtml(r.timestamp)}</td>
                             <td class="py-3 px-4 text-right">
-                                <a href="${API_URL}/api/history/download-report/${r.id}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-300 rounded-md text-xs font-bold transition-all inline-block touch-target">📄 PDF Report</a>
+                                <a href="${API_URL}/api/history/download-report/${r.id}?token=${encodeURIComponent(token)}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-300 rounded-md text-xs font-bold transition-all inline-block touch-target">📄 PDF Report</a>
                             </td>
                         </tr>
                     `).join('');
