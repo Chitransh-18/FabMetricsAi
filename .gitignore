@@ -17,6 +17,8 @@ wafer_env/
 *.zip
 WM811K_Balanced_Kaggle/
 *.log
+fabmetrics.db
+cache/
 
 # Operating System Files
 Thumbs.db

@@ -3,12 +3,19 @@
 from __future__ import annotations
 
 import os
+import tempfile
+from pathlib import Path
+
+# Enable OpenMP duplicate runtime safety on Windows
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
-os.environ["TORCH_HOME"] = "D:/Web Dev/FabMetrics_AI/cache/torch"
-os.environ["HF_HOME"] = "D:/Web Dev/FabMetrics_AI/cache/huggingface"
-os.environ["TMPDIR"] = "D:/Web Dev/FabMetrics_AI/cache/tmp"
-os.environ["TEMP"] = "D:/Web Dev/FabMetrics_AI/cache/tmp"
-os.environ["TMP"] = "D:/Web Dev/FabMetrics_AI/cache/tmp"
+
+# Safe portable cache resolution (works on Windows, Linux, Docker, Render)
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+CACHE_DIR = PROJECT_ROOT / "cache"
+CACHE_DIR.mkdir(parents=True, exist_ok=True)
+
+os.environ.setdefault("TORCH_HOME", str(CACHE_DIR / "torch"))
+os.environ.setdefault("HF_HOME", str(CACHE_DIR / "huggingface"))
 
 from typing import Dict, List
 from wafer_dataset import ID_TO_FAILURE_TYPE, NUM_CLASSES
@@ -45,4 +52,7 @@ BASELINE_METRICS: Dict[str, Dict[str, float | str]] = {
 }
 
 MAX_UPLOAD_BYTES = 10 * 1024 * 1024  # 10 MB
-DEFAULT_WEIGHTS_PATH = "D:/Web Dev/FabMetrics_AI/baseline_resnet34.pth"
+
+# Locate weights file relative to project root
+_local_weights = PROJECT_ROOT / "baseline_resnet34.pth"
+DEFAULT_WEIGHTS_PATH = str(_local_weights if _local_weights.exists() else PROJECT_ROOT / "baseline_resnet34.pth")

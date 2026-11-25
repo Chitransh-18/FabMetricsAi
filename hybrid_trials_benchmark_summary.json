@@ -1,0 +1,56 @@
+[
+  {
+    "name": "Baseline (ResNet-34)",
+    "total_params_M": 21.29,
+    "trainable_params_M": 21.29,
+    "latency_ms_batch16": 654.04,
+    "latency_ms_per_image": 40.88,
+    "val_acc": "86.2%",
+    "macro_f1": "0.835"
+  },
+  {
+    "name": "Trial 01 (ResNet-50 + CBAM)",
+    "total_params_M": 25.26,
+    "trainable_params_M": 25.26,
+    "latency_ms_batch16": 1201.1,
+    "latency_ms_per_image": 75.07,
+    "val_acc": "92.4%",
+    "macro_f1": "0.891"
+  },
+  {
+    "name": "Trial 02 (CNN + ViT Hybrid)",
+    "total_params_M": 2.57,
+    "trainable_params_M": 2.57,
+    "latency_ms_batch16": 250.78,
+    "latency_ms_per_image": 15.67,
+    "val_acc": "94.1%",
+    "macro_f1": "0.916"
+  },
+  {
+    "name": "Trial 03 (Dual-Branch Gated)",
+    "total_params_M": 29.14,
+    "trainable_params_M": 29.14,
+    "latency_ms_batch16": 1366.82,
+    "latency_ms_per_image": 85.43,
+    "val_acc": "95.8%",
+    "macro_f1": "0.942"
+  },
+  {
+    "name": "Trial 04 (Multi-Scale FPN)",
+    "total_params_M": 27.05,
+    "trainable_params_M": 27.05,
+    "latency_ms_batch16": 1244.07,
+    "latency_ms_per_image": 77.75,
+    "val_acc": "94.8%",
+    "macro_f1": "0.929"
+  },
+  {
+    "name": "Final SOTA (Dual-CrossAttn + SWA)",
+    "total_params_M": 33.46,
+    "trainable_params_M": 33.46,
+    "latency_ms_batch16": 1674.57,
+    "latency_ms_per_image": 104.66,
+    "val_acc": "97.8%",
+    "macro_f1": "0.971"
+  }
+]

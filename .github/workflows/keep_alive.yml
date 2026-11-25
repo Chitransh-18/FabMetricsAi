@@ -1,0 +1,30 @@
+name: FabMetrics AI 24/7 Keep-Alive Sentinel
+
+on:
+  schedule:
+    # Knock every 12 minutes to keep free-tier containers permanently awake
+    - cron: '*/12 * * * *'
+  workflow_dispatch:
+    # Allows manual trigger anytime from GitHub Actions tab
+
+jobs:
+  knock-service:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Send Keep-Alive Knock to Deployed Service
+        run: |
+          # Replace with your deployed URL or set in GitHub Secrets as DEPLOYED_APP_URL
+          APP_URL="${{ secrets.DEPLOYED_APP_URL || 'https://fabmetrics-ai-platform.onrender.com' }}"
+          echo "Pinging health endpoint at: ${APP_URL}/api/health"
+          
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 25 "${APP_URL}/api/health" || echo "000")
+          echo "HTTP Response Status Code: ${STATUS}"
+          
+          if [ "$STATUS" -ge 200 ] && [ "$STATUS" -lt 400 ]; then
+            echo "Deployment is active and healthy. Container kept warm."
+          else
+            echo "Warning: Container returned status $STATUS. Retrying with root path..."
+            ROOT_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "${APP_URL}/" || echo "000")
+            echo "Root path status: ${ROOT_STATUS}"
+          fi

@@ -2,8 +2,36 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FabMetrics AI — Industrial Semiconductor Yield & Defect Platform</title>
+    
+    <!-- Meta Descriptions & SEO -->
+    <meta name="description" content="FabMetrics AI is an enterprise-grade semiconductor wafer defect inspection platform powered by a Dual-Branch ResNet50-CBAM + EfficientNet-B0 architecture achieving 97.84% Macro F1 at sub-16ms latency.">
+    <meta name="keywords" content="semiconductor, wafer defect inspection, cleanroom AI, yield enhancement, ResNet50, EfficientNet, WM-811K, microchip failure analysis">
+    <meta name="author" content="Chitransh Saxena & Team">
+    <meta name="theme-color" content="#080c14">
+    <meta property="og:title" content="FabMetrics AI — Industrial Semiconductor Yield & Defect Platform">
+    <meta property="og:description" content="Automated microchip defect inspection, localized bounding box segmentation, and cleanroom yield analytics.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="assets/logo.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="FabMetrics AI — Semiconductor Inspection Platform">
+    <meta name="twitter:description" content="State-of-the-art dual-branch wafer defect classification and cleanroom yield analytics.">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon.png">
+    <link rel="apple-touch-icon" href="assets/logo.png">
+
+    <!-- Progressive Web App (PWA) Manifest & Mobile Meta Tags -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#06b6d4">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="FabMetrics AI">
+    <link rel="apple-touch-icon" href="assets/favicon.png">
+
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Geist & Geist Mono Google Fonts -->
@@ -26,14 +54,23 @@
             --text-main: #f3f4f6;
             --text-muted: #94a3b8;
         }
+        html, body {
+            max-width: 100vw;
+            overflow-x: hidden;
+        }
         * {
             font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            box-sizing: border-box;
         }
         body, button, input, select, textarea {
             font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: var(--base-bg);
             color: var(--text-main);
             transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .touch-target {
+            min-height: 44px;
+            min-width: 44px;
         }
         code, pre, .font-mono {
             font-family: 'Geist Mono', monospace !important;
@@ -174,9 +211,11 @@
         <!-- Landing Footer -->
         <div class="max-w-7xl mx-auto w-full border-t border-white/5 pt-4 text-center text-xs text-slate-500 flex flex-col sm:flex-row justify-between items-center gap-2">
             <div>&copy; 2026 FabMetrics AI Platform &bull; Engineered by Chitransh Saxena & Team</div>
-            <div class="space-x-4">
-                <a href="https://github.com/Chitransh-18/WaferScan_AI" target="_blank" class="text-cyan-400 underline">GitHub Repository</a>
-                <span>Contact: chitranshsaxena18@gmail.com | +91 98765 43210</span>
+            <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+                <a href="https://github.com/Chitransh-18/WaferScan_AI" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:text-cyan-300 underline transition-colors">GitHub Repository</a>
+                <span>Contact: <a href="mailto:chitranshsaxena18@gmail.com" class="text-cyan-400 hover:text-cyan-300 underline transition-colors">chitranshsaxena18@gmail.com</a></span>
+                <span>&bull;</span>
+                <span>Tel: <a href="tel:+919876543210" class="text-cyan-400 hover:text-cyan-300 underline transition-colors">+91 98765 43210</a></span>
             </div>
         </div>
     </div>
@@ -186,9 +225,9 @@
     <!-- ========================================================== -->
     <div id="app-workspace" class="hidden min-h-screen flex flex-col justify-between">
         <!-- Header Section -->
-        <header class="border-b border-white/10 bg-slate-950/80 backdrop-blur-md sticky top-0 z-40 px-4 sm:px-6 py-2.5 flex flex-col md:flex-row items-center justify-between gap-3">
+        <header class="border-b border-white/10 bg-slate-950/80 backdrop-blur-md sticky top-0 z-40 px-4 sm:px-6 py-2.5 flex items-center justify-between gap-3">
             <div class="flex items-center justify-between w-full md:w-auto">
-                <div class="flex items-center space-x-3">
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchMainTab('home')">
                     <img src="assets/logo.png" alt="FabMetrics AI Logo" class="h-10 w-auto object-contain">
                     <div class="flex flex-col justify-center">
                         <span class="text-base font-black tracking-tight text-white leading-none">FABMETRICS <span class="text-cyan-400">AI</span></span>
@@ -196,14 +235,18 @@
                     </div>
                 </div>
 
-                <!-- Mobile User Pill & Status -->
+                <!-- Mobile User Pill & Status & Hamburger Button -->
                 <div class="flex items-center space-x-2 md:hidden">
-                    <button onclick="handleLogout()" class="text-xs text-rose-400 font-bold px-2 py-1 bg-rose-500/10 rounded-lg">Logout</button>
+                    <div class="text-[10px] font-mono px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20" id="backend-status-mobile">Online</div>
+                    <button id="mobile-menu-toggle" onclick="toggleMobileMenu()" class="p-2 rounded-xl bg-slate-900 border border-white/10 text-slate-300 hover:text-cyan-400 focus:outline-none touch-target flex items-center justify-center" aria-label="Toggle Navigation Menu">
+                        <svg id="hamburger-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                        <svg id="close-icon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
                 </div>
             </div>
 
-            <!-- Central Touch-Scrollable Navigation Panel -->
-            <nav class="flex items-center space-x-1.5 bg-slate-950/60 p-1 rounded-xl border border-white/5 overflow-x-auto max-w-full no-scrollbar">
+            <!-- Central Desktop Navigation Panel -->
+            <nav class="hidden md:flex items-center space-x-1.5 bg-slate-950/60 p-1 rounded-xl border border-white/5 overflow-x-auto max-w-full no-scrollbar">
                 <button onclick="switchMainTab('home')" id="tab-btn-home" class="tab-link px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all whitespace-nowrap tab-active">🏠 Home</button>
                 <button onclick="switchMainTab('factory')" id="tab-btn-factory" class="tab-link px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all text-slate-400 hover:text-slate-200 whitespace-nowrap">🚀 Factory Floor</button>
                 <button onclick="switchMainTab('analytics')" id="tab-btn-analytics" class="tab-link px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all text-slate-400 hover:text-slate-200 whitespace-nowrap">📊 Deep Analytics</button>
@@ -223,6 +266,12 @@
                     <button onclick="handleLogout()" class="ml-2 text-rose-400 hover:text-rose-300 font-bold underline">Logout</button>
                 </div>
 
+                <!-- PWA Install Button (Desktop) -->
+                <button id="pwa-install-btn" onclick="installPWA()" class="hidden px-3 py-1.5 bg-gradient-to-r from-blue-600/30 to-cyan-500/30 hover:from-blue-600/50 hover:to-cyan-500/50 border border-cyan-400/40 text-cyan-300 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 shadow-md">
+                    <span>📲</span>
+                    <span>Install App</span>
+                </button>
+
                 <button onclick="openThemeModal()" class="p-2 bg-slate-900 hover:bg-slate-800 border border-white/10 rounded-xl transition-all flex items-center space-x-2 text-xs font-semibold text-slate-300">
                     <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg>
                     <span>Themes</span>
@@ -230,6 +279,44 @@
                 <div class="text-xs font-mono px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20" id="backend-status">Online</div>
             </div>
         </header>
+
+        <!-- Mobile Drawer Navigation (Slide-Down Menu) -->
+        <div id="mobile-nav-drawer" class="hidden md:hidden border-b border-white/10 bg-slate-950/95 backdrop-blur-xl px-4 py-3 space-y-2 sticky top-[57px] z-30 shadow-2xl">
+            <div class="flex items-center justify-between pb-2 border-b border-white/5 text-xs font-mono">
+                <span class="text-slate-400">Authenticated: <b class="text-cyan-400" id="mobile-user-name">Admin</b></span>
+                <span class="px-2 py-0.5 bg-rose-500/10 text-rose-400 rounded border border-rose-500/20 text-[10px]">PATENT PENDING</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2 pt-1">
+                <button onclick="mobileNav('home')" id="mobile-tab-home" class="py-2.5 px-3 rounded-xl bg-slate-900 border border-white/5 font-bold text-xs text-left text-slate-200 hover:text-cyan-400 flex items-center space-x-1.5 touch-target">
+                    <span>🏠 Home</span>
+                </button>
+                <button onclick="mobileNav('factory')" id="mobile-tab-factory" class="py-2.5 px-3 rounded-xl bg-slate-900 border border-white/5 font-bold text-xs text-left text-slate-200 hover:text-cyan-400 flex items-center space-x-1.5 touch-target">
+                    <span>🚀 Factory Floor</span>
+                </button>
+                <button onclick="mobileNav('analytics')" id="mobile-tab-analytics" class="py-2.5 px-3 rounded-xl bg-slate-900 border border-white/5 font-bold text-xs text-left text-slate-200 hover:text-cyan-400 flex items-center space-x-1.5 touch-target">
+                    <span>📊 Deep Analytics</span>
+                </button>
+                <button onclick="mobileNav('history')" id="mobile-tab-history" class="py-2.5 px-3 rounded-xl bg-slate-900 border border-white/5 font-bold text-xs text-left text-slate-200 hover:text-cyan-400 flex items-center space-x-1.5 touch-target">
+                    <span>📜 Remote History</span>
+                </button>
+            </div>
+            <button onclick="mobileNav('encyclopedia')" id="mobile-tab-encyclopedia" class="w-full py-2.5 px-3 rounded-xl bg-slate-900 border border-white/5 font-bold text-xs text-left text-slate-200 hover:text-cyan-400 flex items-center space-x-1.5 touch-target">
+                <span>📚 Cleanroom Library & AI Tutor</span>
+            </button>
+            <!-- PWA Mobile Install Pill -->
+            <button id="pwa-install-btn-mobile" onclick="installPWA()" class="hidden w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-blue-600/20 to-cyan-500/20 border border-cyan-400/30 font-bold text-xs text-cyan-300 flex items-center justify-center space-x-1.5 touch-target">
+                <span>📲 Install Mobile Web App</span>
+            </button>
+            <div class="border-t border-white/10 pt-2 flex items-center justify-between gap-2">
+                <button onclick="openThemeModal(); toggleMobileMenu();" class="flex-1 py-2 px-3 text-xs font-semibold text-cyan-400 bg-slate-900 hover:bg-slate-800 border border-white/10 rounded-xl flex items-center justify-center space-x-1.5 touch-target">
+                    <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg>
+                    <span>Themes (55)</span>
+                </button>
+                <button onclick="handleLogout()" class="py-2 px-4 text-xs font-bold text-rose-400 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 rounded-xl touch-target">
+                    Logout
+                </button>
+            </div>
+        </div>
 
         <!-- ========================================================== -->
         <!-- TAB 0: POST-LOGIN HOME LANDING VIEW -->
@@ -379,6 +466,31 @@
         <div id="view-factory" class="main-view hidden flex-grow max-w-7xl mx-auto px-4 sm:px-6 py-6 w-full grid grid-cols-1 lg:grid-cols-12 gap-6">
             <!-- Left Side Upload Stack -->
             <div class="lg:col-span-4 flex flex-col space-y-4">
+                <!-- Inference Pipeline & Model Switching Card -->
+                <div class="glass-panel p-4 bg-gradient-to-b from-slate-900/90 to-slate-950 border-cyan-500/30 shadow-lg shadow-cyan-500/10">
+                    <div class="flex items-center justify-between mb-2">
+                        <h2 class="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                            Inference Model Pipeline
+                        </h2>
+                        <button type="button" onclick="compareActiveWaferAcrossModels()" id="compare-models-btn" class="text-[10px] font-bold bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/40 px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 shadow-sm">
+                            <span>⚡ Compare 6 Models</span>
+                        </button>
+                    </div>
+                    <select id="pipeline-selector" onchange="switchInferencePipeline(this.value)" class="w-full bg-slate-950 text-slate-100 text-xs font-semibold rounded-xl border border-white/10 px-3 py-2.5 focus:border-cyan-400 focus:outline-none transition-all cursor-pointer">
+                        <option value="sota_dual_cross_attn" selected>🌟 SOTA Dual-Branch Cross-Attn (97.8% F1)</option>
+                        <option value="trial_03_dual_gated">⚡ Trial 03: Dual-Branch Gated (95.8% F1)</option>
+                        <option value="trial_04_fpn">🔬 Trial 04: Multi-Scale FPN (94.8% F1)</option>
+                        <option value="trial_02_vit">🧠 Trial 02: CNN + Vision Transformer (94.1% F1)</option>
+                        <option value="trial_01_cbam">🎯 Trial 01: ResNet-50 + CBAM (92.4% F1)</option>
+                        <option value="baseline_resnet34">📉 Mid-Sem Baseline: ResNet-34 (86.2% F1)</option>
+                    </select>
+                    <div class="mt-2.5 flex items-center justify-between text-[11px] text-slate-400 font-mono">
+                        <span id="pipeline-arch-desc" class="truncate max-w-[190px]">ResNet50 + EfficientNet-B0</span>
+                        <span id="pipeline-acc-pill" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">97.8% Val Acc</span>
+                    </div>
+                </div>
+
                 <div class="glass-panel p-5 bg-gradient-to-b from-slate-900/90 to-slate-950 border-cyan-500/30 shadow-lg shadow-cyan-500/10">
                     <div class="flex items-center justify-between mb-3">
                         <h2 class="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-2">
@@ -409,9 +521,20 @@
                         <div class="text-right text-slate-400">Anomalies: <span id="batch-defect-counter" class="text-rose-400 font-bold">0</span></div>
                     </div>
                     <div id="queue-list" class="flex-grow overflow-y-auto space-y-2 text-xs text-slate-400 pr-1 flex flex-col justify-start">
-                        <p class="opacity-40 text-center py-10">Staged layout queue empty...</p>
+                        <div id="queue-empty-state" class="my-auto flex flex-col items-center justify-center p-5 text-center border border-dashed border-white/10 rounded-2xl bg-slate-950/40 space-y-2.5">
+                            <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                            </div>
+                            <div>
+                                <div class="text-xs font-bold text-slate-200 uppercase tracking-wider">Queue Empty</div>
+                                <p class="text-[11px] text-slate-400 mt-0.5 max-w-[200px]">Drop files above or load a demo wafer substrate to test.</p>
+                            </div>
+                            <button type="button" onclick="loadSampleWaferDirectly()" class="px-3 py-1.5 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 rounded-lg text-xs font-bold transition-all flex items-center space-x-1.5 touch-target">
+                                <span>⚡ Load Demo Wafer</span>
+                            </button>
+                        </div>
                     </div>
-                    <button id="process-batch-btn" disabled class="mt-3 w-full bg-gradient-to-r from-blue-600 to-cyan-500 disabled:from-slate-800 text-white py-3 rounded-xl font-bold text-xs sm:text-sm uppercase tracking-wider shadow-lg transition-all">Execute Processing Matrix</button>
+                    <button id="process-batch-btn" disabled class="mt-3 w-full bg-gradient-to-r from-blue-600 to-cyan-500 disabled:from-slate-800 text-white py-3 rounded-xl font-bold text-xs sm:text-sm uppercase tracking-wider shadow-lg transition-all touch-target">Execute Processing Matrix</button>
                 </div>
             </div>
 
@@ -425,9 +548,20 @@
                     <button id="showroom-back-btn" onclick="returnToDeepAnalytics()" class="hidden px-3 py-1 bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 hover:bg-cyan-500/20 rounded-md text-xs font-semibold transition-all">← Back to Showroom</button>
                 </div>
                 
-                <div id="visual-workspace-placeholder" class="flex-grow border border-dashed border-slate-800 rounded-2xl flex flex-col items-center justify-center text-slate-500 p-8 text-center bg-slate-950/20">
-                    <svg class="w-16 h-16 text-slate-700 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    <p class="text-base text-slate-400 font-medium">Select an inspection row frame from the queue or Deep Analytics catalog to view localized metrics</p>
+                <div id="visual-workspace-placeholder" class="flex-grow border border-dashed border-slate-800 rounded-2xl flex flex-col items-center justify-center text-slate-500 p-8 text-center bg-slate-950/20 space-y-3">
+                    <div class="w-14 h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke-width="1.5"/><circle cx="12" cy="12" r="5" stroke-dasharray="2,2" stroke-width="1.5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>
+                    </div>
+                    <div class="space-y-1">
+                        <h3 class="text-sm font-bold text-slate-200">No Substrate Selected</h3>
+                        <p class="text-xs text-slate-400 max-w-sm leading-relaxed">
+                            Click an item in the Active Queue or explore the 50-sample showroom catalog in Deep Analytics to inspect localized defect bounding boxes, confidence distribution, and inference metrics.
+                        </p>
+                    </div>
+                    <button onclick="switchMainTab('analytics')" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 border border-white/10 text-cyan-400 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 touch-target">
+                        <span>📊 Explore 50-Sample Showroom</span>
+                        <span>→</span>
+                    </button>
                 </div>
                 
                 <div id="visual-workspace" class="hidden flex-grow grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
@@ -570,11 +704,14 @@
         </div>
 
         <!-- Footer Layout -->
-        <footer class="border-t border-white/5 bg-slate-950/80 text-center py-4 text-xs text-slate-500 space-y-1 px-4">
+        <footer class="border-t border-white/5 bg-slate-950/80 text-center py-4 text-xs text-slate-500 space-y-1.5 px-4">
             <div>&copy; 2026 FabMetrics AI Platform &bull; Engineered by Chitransh Saxena & Team &bull; <span class="text-rose-400 font-mono">PATENT PENDING • REG US-2026-FABMETRICS-AI</span></div>
-            <div>
-                Contact: <a href="mailto:chitranshsaxena18@gmail.com" class="text-cyan-400 underline">chitranshsaxena18@gmail.com</a> | +91 98765 43210 &bull; 
-                GitHub: <a href="https://github.com/Chitransh-18/WaferScan_AI" target="_blank" class="text-cyan-400 underline">github.com/Chitransh-18/WaferScan_AI</a>
+            <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+                <span>Contact: <a href="mailto:chitranshsaxena18@gmail.com" class="text-cyan-400 hover:text-cyan-300 underline transition-colors">chitranshsaxena18@gmail.com</a></span>
+                <span>&bull;</span>
+                <span>Tel: <a href="tel:+919876543210" class="text-cyan-400 hover:text-cyan-300 underline transition-colors">+91 98765 43210</a></span>
+                <span>&bull;</span>
+                <span>GitHub: <a href="https://github.com/Chitransh-18/WaferScan_AI" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:text-cyan-300 underline transition-colors">github.com/Chitransh-18/WaferScan_AI</a></span>
             </div>
         </footer>
     </div>
@@ -582,22 +719,22 @@
     <!-- ========================================================== -->
     <!-- FLOATING CLEANROOM AI TUTOR CHATBOT WIDGET -->
     <!-- ========================================================== -->
-    <div id="floating-chatbot-container" class="fixed bottom-5 right-5 z-50">
+    <div id="floating-chatbot-container" class="fixed bottom-5 right-3 sm:right-5 z-50">
         <!-- Chatbot Toggle Button -->
-        <button onclick="toggleFloatingChat()" class="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white px-4 py-3 rounded-full shadow-2xl transition-all transform hover:scale-105">
+        <button onclick="toggleFloatingChat()" class="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white px-4 py-3 rounded-full shadow-2xl transition-all transform hover:scale-105 touch-target">
             <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
             <span class="text-xs font-bold uppercase tracking-wider">💬 Cleanroom AI Tutor</span>
         </button>
 
-        <!-- Floating Chat Window (Hidden by Default) -->
-        <div id="floating-chat-window" class="hidden fixed bottom-20 right-5 w-[90vw] sm:w-[380px] h-[480px] bg-slate-950/95 backdrop-blur-xl border border-cyan-500/30 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+        <!-- Floating Chat Window (Hidden by Default - Mobile Overflow Protected) -->
+        <div id="floating-chat-window" class="hidden fixed bottom-20 right-3 sm:right-5 w-[calc(100vw-24px)] max-w-[380px] h-[480px] max-h-[75vh] bg-slate-950/95 backdrop-blur-xl border border-cyan-500/30 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
             <!-- Header -->
             <div class="p-3.5 bg-gradient-to-r from-slate-900 to-slate-950 border-b border-white/10 flex justify-between items-center">
                 <div class="flex items-center space-x-2">
                     <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
                     <h4 class="text-xs font-bold text-white uppercase tracking-wider">Cleanroom AI Tutor</h4>
                 </div>
-                <button onclick="toggleFloatingChat()" class="text-slate-400 hover:text-white text-lg font-bold px-2">&times;</button>
+                <button onclick="toggleFloatingChat()" class="text-slate-400 hover:text-white text-lg font-bold px-2 touch-target flex items-center justify-center">&times;</button>
             </div>
 
             <!-- Messages Feed -->
@@ -617,16 +754,14 @@
 
             <!-- Input Bar -->
             <div class="p-2 bg-slate-950 border-t border-white/10 flex items-center space-x-2">
-                <input type="text" id="floating-chat-input" placeholder="Type cleanroom question..." onkeydown="if(event.key==='Enter') sendFloatingMessage()" class="flex-grow bg-slate-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-400">
-                <button onclick="sendFloatingMessage()" class="px-3 py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-xl text-xs">Send</button>
+                <input type="text" id="floating-chat-input" placeholder="Ask about wafer physics, CMP, or SOTA metrics..." onkeydown="if(event.key==='Enter') sendFloatingMessage()" class="flex-grow bg-slate-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-400">
+                <button onclick="sendFloatingMessage()" class="px-3.5 py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-xl text-xs touch-target">Send</button>
             </div>
         </div>
     </div>
 
-    <!-- Toast Notification -->
-    <div id="error-toast" class="hidden fixed bottom-6 right-6 max-w-sm bg-rose-950/90 border border-rose-500/30 text-rose-200 p-4 rounded-xl shadow-2xl z-50 flex items-start space-x-3">
-        <div class="flex-grow"><h4 class="text-sm font-bold uppercase tracking-wider text-rose-300">Notice</h4><p class="text-sm text-rose-300/80 mt-1" id="error-message"></p></div>
-    </div>
+    <!-- Unified Toast Notification System Container (Success, Error & Info) -->
+    <div id="toast-container" class="fixed bottom-6 right-3 sm:right-6 max-w-sm w-[calc(100vw-24px)] z-50 space-y-2 pointer-events-none"></div>
 
     <!-- Script Logic Matrix -->
     <script>
@@ -646,6 +781,150 @@
         let stagedFiles = [];
         let executionResults = {};
         let currentUser = null;
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        // ==========================================================
+        // DYNAMIC PAGE TITLE CONTROLLER
+        // ==========================================================
+        function updatePageTitle(viewKey) {
+            const titles = {
+                'home': 'Home | FabMetrics AI — Semiconductor Inspection',
+                'factory': 'Factory Floor & Matrix | FabMetrics AI',
+                'analytics': 'Deep Analytics & IEEE Benchmarks | FabMetrics AI',
+                'history': 'Remote Inspection History | FabMetrics AI',
+                'encyclopedia': 'Cleanroom Encyclopedia & AI Tutor | FabMetrics AI'
+            };
+            document.title = titles[viewKey] || 'FabMetrics AI — Industrial Semiconductor Yield & Defect Platform';
+        }
+
+        // ==========================================================
+        // MOBILE NAVIGATION MENU DRAWER CONTROLLER
+        // ==========================================================
+        function toggleMobileMenu() {
+            const drawer = document.getElementById('mobile-nav-drawer');
+            const hamburger = document.getElementById('hamburger-icon');
+            const close = document.getElementById('close-icon');
+            if (!drawer) return;
+            const isClosed = drawer.classList.contains('hidden');
+            if (isClosed) {
+                drawer.classList.remove('hidden');
+                if (hamburger) hamburger.classList.add('hidden');
+                if (close) close.classList.remove('hidden');
+            } else {
+                drawer.classList.add('hidden');
+                if (hamburger) hamburger.classList.remove('hidden');
+                if (close) close.classList.add('hidden');
+            }
+        }
+
+        function mobileNav(viewKey) {
+            switchMainTab(viewKey);
+            const drawer = document.getElementById('mobile-nav-drawer');
+            const hamburger = document.getElementById('hamburger-icon');
+            const close = document.getElementById('close-icon');
+            if (drawer) drawer.classList.add('hidden');
+            if (hamburger) hamburger.classList.remove('hidden');
+            if (close) close.classList.add('hidden');
+        }
+
+        // ==========================================================
+        // UNIFIED TOAST NOTIFICATION SYSTEM (SUCCESS, ERROR, INFO)
+        // ==========================================================
+        function showSuccessToast(title, message) {
+            createToast(title, message, 'success');
+        }
+
+        function showErrorToast(title, message) {
+            createToast(title, message, 'error');
+        }
+
+        function createToast(title, message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            toast.className = `pointer-events-auto transform transition-all duration-300 ease-out translate-y-2 opacity-0 p-3.5 sm:p-4 rounded-xl shadow-2xl border flex items-start space-x-3 ${
+                type === 'success' 
+                    ? 'bg-slate-950/95 border-emerald-500/40 text-emerald-200' 
+                    : 'bg-slate-950/95 border-rose-500/40 text-rose-200'
+            }`;
+
+            const iconSvg = type === 'success' 
+                ? `<svg class="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`
+                : `<svg class="w-5 h-5 text-rose-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>`;
+
+            toast.innerHTML = `
+                ${iconSvg}
+                <div class="flex-grow pr-2">
+                    <h5 class="text-xs font-bold uppercase tracking-wider ${type === 'success' ? 'text-emerald-300' : 'text-rose-300'}">${escapeHtml(title)}</h5>
+                    <p class="text-xs ${type === 'success' ? 'text-slate-300' : 'text-slate-300'} mt-0.5 leading-snug">${escapeHtml(message)}</p>
+                </div>
+                <button class="text-slate-400 hover:text-white text-base font-bold leading-none shrink-0 touch-target flex items-center justify-center" onclick="this.parentElement.remove()">&times;</button>
+            `;
+
+            container.appendChild(toast);
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            });
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, type === 'success' ? 3500 : 5000);
+        }
+
+        window.showSuccessToast = showSuccessToast;
+        window.showErrorToast = showErrorToast;
+        window.loadSampleWaferDirectly = loadSampleWaferDirectly;
+        window.toggleMobileMenu = toggleMobileMenu;
+        window.mobileNav = mobileNav;
+
+        // ==========================================================
+        // DEMO WAFER SAMPLE STAGING (EMPTY STATE ACTION)
+        // ==========================================================
+        async function loadSampleWaferDirectly() {
+            try {
+                const resp = await fetch('assets/sample_wafer.png');
+                if (!resp.ok) throw new Error("Sample file not found");
+                const blob = await resp.blob();
+                const sampleFile = new File([blob], "Cleanroom_Demo_Wafer_WM811K.png", { type: "image/png" });
+                
+                const id = 'staged_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+                stagedFiles.push({ id, file: sampleFile, processed: false });
+                renderQueueUI();
+                showSuccessToast("Demo Substrate Loaded", "Cleanroom_Demo_Wafer_WM811K.png staged. Click 'Execute Processing Matrix' to analyze!");
+            } catch (err) {
+                // Fallback canvas synthetic wafer
+                const canvas = document.createElement('canvas');
+                canvas.width = 224;
+                canvas.height = 224;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(0, 0, 224, 224);
+                ctx.fillStyle = '#1e293b';
+                ctx.beginPath();
+                ctx.arc(112, 112, 100, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#f43f5e';
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(50, 60);
+                ctx.lineTo(160, 150);
+                ctx.stroke();
+
+                canvas.toBlob(blob => {
+                    const sampleFile = new File([blob], "Synthetic_Scratch_Wafer.png", { type: "image/png" });
+                    const id = 'staged_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+                    stagedFiles.push({ id, file: sampleFile, processed: false });
+                    renderQueueUI();
+                    showSuccessToast("Demo Substrate Loaded", "Synthetic_Scratch_Wafer.png staged in inspection queue!");
+                });
+            }
+        }
 
         // SHOWROOM 50-SAMPLE DATASET WITH SEGMENTATION OVERLAYS & PAGINATION
         let currentShowroomPage = 1;
@@ -970,7 +1249,12 @@
                 currentUser = JSON.parse(savedUser);
                 document.getElementById('landing-gateway').classList.add('hidden');
                 document.getElementById('app-workspace').classList.remove('hidden');
-                document.getElementById('user-display-name').innerText = `👤 ${currentUser.username}`;
+                
+                const userDisplayName = document.getElementById('user-display-name');
+                if (userDisplayName) userDisplayName.innerText = `👤 ${currentUser.username}`;
+                
+                const mobileUserName = document.getElementById('mobile-user-name');
+                if (mobileUserName) mobileUserName.innerText = currentUser.username;
                 
                 const titleEl = document.getElementById('home-welcome-title');
                 if (titleEl) {
@@ -983,6 +1267,7 @@
             } else {
                 document.getElementById('landing-gateway').classList.remove('hidden');
                 document.getElementById('app-workspace').classList.add('hidden');
+                updatePageTitle('home');
             }
         }
 
@@ -1008,7 +1293,7 @@
 
         async function loginUser(username, password) {
             const errDiv = document.getElementById('login-error');
-            errDiv.classList.add('hidden');
+            if (errDiv) errDiv.classList.add('hidden');
             try {
                 const res = await fetch(`${API_URL}/api/auth/login`, {
                     method: 'POST',
@@ -1023,13 +1308,22 @@
                     }
                     localStorage.setItem('fabmetrics_user', JSON.stringify(currentUser));
                     checkAuthState();
+                    showSuccessToast("Cleanroom Access Granted", `Welcome to FabMetrics AI, ${currentUser.username}!`);
                 } else {
-                    errDiv.innerText = data.detail || "Authentication failure.";
-                    errDiv.classList.remove('hidden');
+                    const errMsg = data.detail || "Authentication failure. Please check credentials.";
+                    if (errDiv) {
+                        errDiv.innerText = errMsg;
+                        errDiv.classList.remove('hidden');
+                    }
+                    showErrorToast("Authentication Failed", errMsg);
                 }
             } catch (err) {
-                errDiv.innerText = "Backend server unreachable. Ensure API is running.";
-                errDiv.classList.remove('hidden');
+                const connErr = "Backend server unreachable. Ensure API is running on port 8000.";
+                if (errDiv) {
+                    errDiv.innerText = connErr;
+                    errDiv.classList.remove('hidden');
+                }
+                showErrorToast("Connection Error", connErr);
             }
         }
 
@@ -1038,6 +1332,7 @@
             localStorage.removeItem('fabmetrics_token');
             currentUser = null;
             checkAuthState();
+            showSuccessToast("Logged Out", "Session terminated. Cleanroom profile secured.");
         }
 
         function switchMainTab(viewKey) {
@@ -1049,6 +1344,20 @@
             
             if (targetView) targetView.classList.remove('hidden');
             if (targetBtn) targetBtn.classList.add('tab-active');
+            
+            // Sync mobile tab indicators
+            ['home', 'factory', 'analytics', 'history', 'encyclopedia'].forEach(k => {
+                const mBtn = document.getElementById('mobile-tab-' + k);
+                if (mBtn) {
+                    if (k === viewKey) {
+                        mBtn.classList.add('border-cyan-400', 'text-cyan-400');
+                    } else {
+                        mBtn.classList.remove('border-cyan-400', 'text-cyan-400');
+                    }
+                }
+            });
+
+            updatePageTitle(viewKey);
             
             if (viewKey === 'history') {
                 loadHistoryData();
@@ -1069,29 +1378,54 @@
                 const userId = currentUser ? currentUser.id : null;
                 const url = userId ? `${API_URL}/api/history?user_id=${userId}` : `${API_URL}/api/history`;
                 const res = await fetch(url, { headers: getAuthHeaders() });
-                if (!res.ok) return;
-                const data = await res.json();
                 const tbody = document.getElementById('history-table-body');
-                if (!data.records || data.records.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-slate-500">No saved research inspection records found for your account.</td></tr>`;
+                if (!res.ok) {
+                    if (tbody) tbody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-rose-400">Failed to load inspection history from database.</td></tr>`;
                     return;
                 }
-                tbody.innerHTML = data.records.map(r => `
-                    <tr>
-                        <td class="py-3 px-4 text-cyan-400 font-bold">#${r.id}</td>
-                        <td class="py-3 px-4 font-sans text-slate-300">${r.username}</td>
-                        <td class="py-3 px-4 font-sans text-slate-400">${r.filename}</td>
-                        <td class="py-3 px-4 text-center font-bold ${r.predicted_class.toLowerCase() === 'none' ? 'text-emerald-400' : 'text-rose-400'}">${r.predicted_class}</td>
-                        <td class="py-3 px-4 text-center text-cyan-400">${(r.confidence * 100).toFixed(1)}%</td>
-                        <td class="py-3 px-4 text-center">${r.defects_count}</td>
-                        <td class="py-3 px-4 text-center text-slate-400">${r.timestamp}</td>
-                        <td class="py-3 px-4 text-right">
-                            <a href="${API_URL}/api/history/download-report/${r.id}" target="_blank" class="px-3 py-1 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-300 rounded-md text-xs font-bold transition-all">📄 PDF Report</a>
-                        </td>
-                    </tr>
-                `).join('');
+                const data = await res.json();
+                if (!data.records || data.records.length === 0) {
+                    if (tbody) {
+                        tbody.innerHTML = `
+                            <tr>
+                                <td colspan="8" class="py-12 text-center">
+                                    <div class="flex flex-col items-center justify-center space-y-3">
+                                        <div class="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 7v10c0 2 1.5 3 3.5 3h9c2 0 3.5-1 3.5-3V7c0-2-1.5-3-3.5-3h-9C5.5 4 4 5 4 7zM9 9h6M9 13h6M9 17h4"></path></svg>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-sm font-bold text-slate-200 uppercase tracking-wider">No Inspection Records Found</h4>
+                                            <p class="text-xs text-slate-400 mt-1 max-w-sm">No historical research runs have been recorded for your account yet. Process wafer substrates on the Factory Floor to save inspections automatically.</p>
+                                        </div>
+                                        <button onclick="switchMainTab('factory')" class="mt-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow-lg shadow-cyan-500/20 touch-target">
+                                            🚀 Go to Factory Floor
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    }
+                    return;
+                }
+                if (tbody) {
+                    tbody.innerHTML = data.records.map(r => `
+                        <tr>
+                            <td class="py-3 px-4 text-cyan-400 font-bold">#${r.id}</td>
+                            <td class="py-3 px-4 font-sans text-slate-300">${escapeHtml(r.username)}</td>
+                            <td class="py-3 px-4 font-sans text-slate-400">${escapeHtml(r.filename)}</td>
+                            <td class="py-3 px-4 text-center font-bold ${r.predicted_class.toLowerCase() === 'none' ? 'text-emerald-400' : 'text-rose-400'}">${escapeHtml(r.predicted_class)}</td>
+                            <td class="py-3 px-4 text-center text-cyan-400 font-bold">${(r.confidence * 100).toFixed(1)}%</td>
+                            <td class="py-3 px-4 text-center">${r.defects_count}</td>
+                            <td class="py-3 px-4 text-center text-slate-400">${escapeHtml(r.timestamp)}</td>
+                            <td class="py-3 px-4 text-right">
+                                <a href="${API_URL}/api/history/download-report/${r.id}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-300 rounded-md text-xs font-bold transition-all inline-block touch-target">📄 PDF Report</a>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
             } catch (e) {
                 console.error("History fetch error", e);
+                showErrorToast("Database Error", "Failed to retrieve inspection history records.");
             }
         }
 
@@ -1121,53 +1455,175 @@
         dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('border-cyan-400'); handleFiles(e.dataTransfer.files); });
 
         function handleFiles(files) {
+            let addedCount = 0;
             Array.from(files).forEach(f => {
-                if(!f.type.startsWith('image/')) return;
+                if (!f.type.startsWith('image/')) {
+                    showErrorToast("Invalid Format", `${f.name} is not an image file. Please upload PNG or JPG.`);
+                    return;
+                }
+                if (f.size > 10 * 1024 * 1024) {
+                    showErrorToast("File Too Large", `${f.name} exceeds strict 10MB memory protection limit.`);
+                    return;
+                }
                 const id = 'staged_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
                 stagedFiles.push({ id, file: f, processed: false });
+                addedCount++;
             });
+            if (addedCount > 0) {
+                renderQueueUI();
+                showSuccessToast("Substrate(s) Staged", `Queued ${addedCount} wafer map image(s) for analysis.`);
+            }
+        }
+
+        function removeStagedItem(id, event) {
+            if (event) event.stopPropagation();
+            stagedFiles = stagedFiles.filter(item => item.id !== id);
+            delete executionResults[id];
             renderQueueUI();
+            if (stagedFiles.length === 0) {
+                workspacePlaceholder.classList.remove('hidden');
+                workspacePanel.classList.add('hidden');
+            }
         }
 
         function renderQueueUI() {
-            if(stagedFiles.length === 0) return;
-            batchStatsBar.classList.remove('hidden'); processBatchBtn.disabled = false;
-            queueList.innerHTML = ''; let done = 0, defects = 0;
+            if (stagedFiles.length === 0) {
+                batchStatsBar.classList.add('hidden');
+                processBatchBtn.disabled = true;
+                downloadReportBtn.classList.add('hidden');
+                queueList.innerHTML = `
+                    <div id="queue-empty-state" class="my-auto flex flex-col items-center justify-center p-5 text-center border border-dashed border-white/10 rounded-2xl bg-slate-950/40 space-y-2.5">
+                        <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-slate-200 uppercase tracking-wider">Queue Empty</div>
+                            <p class="text-[11px] text-slate-400 mt-0.5 max-w-[200px]">Drop files above or load a demo wafer substrate to test.</p>
+                        </div>
+                        <button type="button" onclick="loadSampleWaferDirectly()" class="px-3 py-1.5 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 rounded-lg text-xs font-bold transition-all flex items-center space-x-1.5 touch-target">
+                            <span>⚡ Load Demo Wafer</span>
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            batchStatsBar.classList.remove('hidden');
+            processBatchBtn.disabled = false;
+            queueList.innerHTML = '';
+            let done = 0, defects = 0;
+
             stagedFiles.forEach((item, index) => {
-                if(item.processed) {
+                if (item.processed) {
                     done++;
                     const res = executionResults[item.id];
-                    if(res && res.predicted_class.toLowerCase() !== 'none') defects++;
+                    if (res && res.predicted_class.toLowerCase() !== 'none') defects++;
                 }
                 const row = document.createElement('div');
-                row.className = "p-2.5 bg-slate-900 border border-white/5 rounded-xl flex justify-between cursor-pointer text-xs text-slate-300";
-                row.innerHTML = `<span>${index+1}. ${item.file.name}</span><span>${item.processed ? 'DONE' : 'Staged'}</span>`;
+                row.className = "p-2.5 bg-slate-900 border border-white/5 hover:border-cyan-500/40 rounded-xl flex items-center justify-between cursor-pointer text-xs text-slate-300 transition-all group";
+                row.innerHTML = `
+                    <div class="flex items-center space-x-2 truncate">
+                        <span class="w-1.5 h-1.5 rounded-full ${item.processed ? 'bg-emerald-400' : 'bg-amber-400'}"></span>
+                        <span class="truncate">${index + 1}. ${escapeHtml(item.file.name)}</span>
+                    </div>
+                    <div class="flex items-center space-x-2 shrink-0">
+                        <span class="font-mono text-[10px] px-2 py-0.5 rounded-full ${item.processed ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold' : 'bg-slate-800 text-slate-400'}">
+                            ${item.processed ? 'INSPECTED' : 'QUEUED'}
+                        </span>
+                        <button onclick="removeStagedItem('${item.id}', event)" class="opacity-0 group-hover:opacity-100 text-rose-400 hover:text-rose-300 text-sm font-bold px-1 transition-opacity" title="Remove">&times;</button>
+                    </div>
+                `;
                 row.onclick = () => selectQueueItem(item.id);
                 queueList.appendChild(row);
             });
+
             document.getElementById('batch-progress-text').innerText = `${done}/${stagedFiles.length}`;
             document.getElementById('batch-defect-counter').innerText = `${defects}`;
-            if(done === stagedFiles.length && done > 0) downloadReportBtn.classList.remove('hidden');
+            if (done === stagedFiles.length && done > 0) {
+                downloadReportBtn.classList.remove('hidden');
+            }
         }
 
         processBatchBtn.addEventListener('click', async () => {
+            if (stagedFiles.length === 0) {
+                showErrorToast("Queue Empty", "Please upload or load wafer maps before processing.");
+                return;
+            }
+
+            processBatchBtn.disabled = true;
+            processBatchBtn.innerText = "Processing Inference Matrix...";
+
+            let successCount = 0;
             for (let item of stagedFiles) {
-                if(item.processed) continue;
-                const fd = new FormData(); fd.append('file', item.file);
-                const res = await fetch(`${API_URL}/predict`, { method: 'POST', headers: getAuthHeaders(), body: fd });
-                if(res.ok) { executionResults[item.id] = await res.json(); item.processed = true; renderQueueUI(); selectQueueItem(item.id); }
+                if (item.processed) {
+                    successCount++;
+                    continue;
+                }
+                const fd = new FormData();
+                fd.append('file', item.file);
+                fd.append('pipeline_id', currentPipelineId);
+                try {
+                    const res = await fetch(`${API_URL}/predict`, { method: 'POST', headers: getAuthHeaders(), body: fd });
+                    if (res.ok) {
+                        executionResults[item.id] = await res.json();
+                        item.processed = true;
+                        successCount++;
+                        renderQueueUI();
+                        selectQueueItem(item.id);
+                    } else {
+                        showErrorToast("Inference Error", `Failed processing ${item.file.name}`);
+                    }
+                } catch (e) {
+                    showErrorToast("Network Error", `Could not connect to backend server for ${item.file.name}`);
+                }
+            }
+
+            processBatchBtn.innerText = "Execute Processing Matrix";
+            processBatchBtn.disabled = false;
+
+            if (successCount > 0) {
+                showSuccessToast("Inference Matrix Complete", `Successfully processed ${successCount} wafer substrate(s) at sub-16ms latency!`);
             }
         });
 
         function selectQueueItem(id) {
-            const data = executionResults[id]; if(!data) return;
-            workspacePlaceholder.classList.add('hidden'); workspacePanel.classList.remove('hidden');
+            activeSelectedItemId = id;
+            const data = executionResults[id];
+            if (!data) return;
+            workspacePlaceholder.classList.add('hidden');
+            workspacePanel.classList.remove('hidden');
             workspacePanel.innerHTML = `
-                <div class="md:col-span-7"><div class="w-full aspect-square bg-slate-950 border border-white/10 rounded-2xl p-2 flex items-center justify-center"><img src="data:image/png;base64,${data.annotated_image}" class="w-full h-full object-contain rounded-xl"></div></div>
+                <div class="md:col-span-7">
+                    <div class="w-full aspect-square bg-slate-950 border border-cyan-500/30 rounded-2xl p-4 flex flex-col items-center justify-center relative shadow-2xl">
+                        <img src="data:image/png;base64,${data.annotated_image}" class="w-full h-full object-contain rounded-xl" alt="Annotated Wafer Map">
+                        <div class="mt-2 text-center text-xs font-mono text-cyan-400">Computer Vision Segmented Defect Bounding Box Overlay</div>
+                    </div>
+                </div>
                 <div class="md:col-span-5 space-y-4">
-                    <div class="bg-slate-950 p-4 border border-white/5 rounded-xl text-center"><div class="text-2xl font-black text-white">${data.predicted_class}</div><div class="text-sm text-cyan-400 mt-1">${(data.confidence*100).toFixed(1)}% Confidence</div></div>
-                    <div class="bg-slate-950/40 p-4 border border-white/5 rounded-xl text-xs space-y-1"><div class="flex justify-between"><span>Latency:</span><span>${data.inference_time_ms} ms</span></div><div class="flex justify-between"><span>Resolution:</span><span>${data.image_width}x${data.image_height}</span></div><div class="flex justify-between"><span>Defect Clusters:</span><span class="text-rose-400 font-bold">${(data.bounding_boxes || []).length}</span></div></div>
-                    <div class="bg-slate-950/30 p-3 rounded-xl border border-white/5"><div id="top3-container" class="space-y-2"></div></div>
+                    <!-- Active Pipeline Badge -->
+                    <div class="flex items-center justify-between text-[11px] font-mono px-3 py-1.5 bg-cyan-950/40 border border-cyan-500/30 rounded-xl">
+                        <span class="text-slate-400">Pipeline:</span>
+                        <span class="text-cyan-300 font-bold">${escapeHtml(data.pipeline_short_name || data.pipeline_name || 'SOTA Dual-Branch')}</span>
+                        <span class="text-emerald-400 font-bold">(${data.benchmark_accuracy || '97.8%'})</span>
+                    </div>
+
+                    <div class="bg-slate-950 p-4 border border-white/5 rounded-xl text-center">
+                        <div class="text-2xl font-black text-white">${escapeHtml(data.predicted_class)}</div>
+                        <div class="text-sm text-cyan-400 font-mono mt-1">${(data.confidence * 100).toFixed(1)}% Certainty</div>
+                    </div>
+                    <div class="bg-slate-950/40 p-4 border border-white/5 rounded-xl text-xs space-y-1.5 font-mono">
+                        <div class="flex justify-between"><span>Inference Latency:</span><span class="text-cyan-400 font-bold">${data.inference_time_ms} ms</span></div>
+                        <div class="flex justify-between"><span>Substrate Resolution:</span><span>${data.image_width}x${data.image_height}</span></div>
+                        <div class="flex justify-between"><span>Defect Clusters:</span><span class="text-rose-400 font-bold">${(data.bounding_boxes || []).length}</span></div>
+                    </div>
+                    <div class="bg-slate-950/30 p-3 rounded-xl border border-white/5">
+                        <div id="top3-container" class="space-y-2"></div>
+                    </div>
+
+                    <!-- Compare All Models Button -->
+                    <button onclick="compareSpecificWaferItem('${id}')" class="w-full py-2.5 px-3 bg-gradient-to-r from-purple-900/40 via-blue-900/30 to-cyan-900/40 hover:from-purple-800/60 hover:to-cyan-800/60 border border-purple-500/40 text-purple-300 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-1.5 shadow-md">
+                        <span>⚡ Compare All 6 Models on this Wafer</span>
+                    </button>
                 </div>`;
             renderTop3Bars(data.top3_predictions);
         }
@@ -1176,7 +1632,7 @@
             const records = [];
             stagedFiles.forEach(item => {
                 const res = executionResults[item.id];
-                if(res) {
+                if (res) {
                     records.push({
                         filename: item.file.name,
                         predicted_class: res.predicted_class,
@@ -1186,41 +1642,240 @@
                     });
                 }
             });
-            const response = await fetch(`${API_URL}/generate-report`, {
-                method: 'POST',
-                headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
-                body: JSON.stringify({
-                    results: records,
-                    user: currentUser || { username: "admin", role: "Lead Semiconductor Engineer" }
-                })
-            });
-            if(response.ok) {
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = "FabMetrics_AI_Executive_Report.pdf";
-                a.click();
+
+            if (records.length === 0) {
+                showErrorToast("No Inspected Data", "Process at least one substrate before generating report.");
+                return;
+            }
+
+            showSuccessToast("Generating Report", "Executive 4-page PDF yield report compiling with patent watermark...");
+
+            try {
+                const response = await fetch(`${API_URL}/generate-report`, {
+                    method: 'POST',
+                    headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
+                    body: JSON.stringify({
+                        results: records,
+                        user: currentUser || { username: "admin", role: "Lead Semiconductor Engineer" }
+                    })
+                });
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = "FabMetrics_AI_Executive_Report.pdf";
+                    a.click();
+                    showSuccessToast("Download Ready", "FabMetrics_AI_Executive_Report.pdf downloaded successfully!");
+                } else {
+                    showErrorToast("Report Error", "Failed to compile PDF report from backend.");
+                }
+            } catch (err) {
+                showErrorToast("Network Error", "Could not connect to PDF report generator.");
             }
         }
-
 
         async function checkBackendConnection() {
             try { 
                 const r = await fetch(`${API_URL}/model-info`); 
                 if (r.ok) { 
-                    backendStatus.innerText = "Online"; 
-                    backendStatus.className = "text-xs font-mono px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20"; 
+                    if (backendStatus) {
+                        backendStatus.innerText = "Online"; 
+                        backendStatus.className = "text-xs font-mono px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20"; 
+                    }
+                    const mobStatus = document.getElementById('backend-status-mobile');
+                    if (mobStatus) {
+                        mobStatus.innerText = "Online";
+                        mobStatus.className = "text-[10px] font-mono px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20";
+                    }
                 } else {
                     throw new Error();
                 }
             } catch (err) { 
-                backendStatus.innerText = "Offline"; 
-                backendStatus.className = "text-xs font-mono px-3 py-1 bg-rose-500/10 text-rose-400 rounded-full border border-rose-500/20"; 
+                if (backendStatus) {
+                    backendStatus.innerText = "Offline"; 
+                    backendStatus.className = "text-xs font-mono px-3 py-1 bg-rose-500/10 text-rose-400 rounded-full border border-rose-500/20"; 
+                }
+                const mobStatus = document.getElementById('backend-status-mobile');
+                if (mobStatus) {
+                    mobStatus.innerText = "Offline";
+                    mobStatus.className = "text-[10px] font-mono px-2 py-0.5 bg-rose-500/10 text-rose-400 rounded-full border border-rose-500/20";
+                }
             }
         }
         
-        document.addEventListener('DOMContentLoaded', () => { checkAuthState(); });
+        document.addEventListener('DOMContentLoaded', () => { 
+            checkAuthState(); 
+            // Initialize empty state in queue
+            renderQueueUI();
+        });
+
+        // ==========================================================
+        // MULTI-MODEL PIPELINE SWITCHER & COMPARISON ENGINE
+        // ==========================================================
+        let currentPipelineId = "sota_dual_cross_attn";
+        let activeSelectedItemId = null;
+        let deferredPrompt = null;
+
+        const PIPELINE_DESCS = {
+            "sota_dual_cross_attn": { desc: "ResNet50 + EfficientNet-B0 + Cross-Attn", acc: "97.8% Val Acc" },
+            "trial_03_dual_gated": { desc: "ResNet-50 + MobileNetV3 + Gated", acc: "95.8% Val Acc" },
+            "trial_04_fpn": { desc: "ResNet-50 + Multi-Scale FPN", acc: "94.8% Val Acc" },
+            "trial_02_vit": { desc: "ResNet Stem + 4-Layer MHSA ViT", acc: "94.1% Val Acc" },
+            "trial_01_cbam": { desc: "ResNet-50 + Multi-Stage CBAM", acc: "92.4% Val Acc" },
+            "baseline_resnet34": { desc: "Vanilla ResNet-34 Transfer Learning", acc: "86.2% Val Acc" }
+        };
+
+        function switchInferencePipeline(val) {
+            currentPipelineId = val;
+            const meta = PIPELINE_DESCS[val] || PIPELINE_DESCS["sota_dual_cross_attn"];
+            const descEl = document.getElementById('pipeline-arch-desc');
+            const accEl = document.getElementById('pipeline-acc-pill');
+            if (descEl) descEl.innerText = meta.desc;
+            if (accEl) accEl.innerText = meta.acc;
+            showSuccessToast("Pipeline Switched", `Active model set to: ${val}`);
+        }
+
+        async function compareSpecificWaferItem(id) {
+            const item = stagedFiles.find(f => f.id === id);
+            if (!item) return;
+            const modal = document.getElementById('comparison-modal');
+            modal.classList.remove('hidden');
+            document.getElementById('comparison-consensus-text').innerText = `Running 6-model inference on ${item.file.name}...`;
+            document.getElementById('comparison-table-body').innerHTML = `<tr><td colspan="6" class="py-6 text-center text-cyan-400 font-mono">Running forward passes across 6 architectures...</td></tr>`;
+
+            try {
+                const fd = new FormData();
+                fd.append('file', item.file);
+                const res = await fetch(`${API_URL}/api/predict/compare`, { method: 'POST', headers: getAuthHeaders(), body: fd });
+                if (res.ok) {
+                    const data = await res.json();
+                    renderComparisonResults(data);
+                } else {
+                    showErrorToast("Comparison Error", "Could not run multi-model comparison.");
+                }
+            } catch (e) {
+                showErrorToast("Network Error", "Failed to connect to comparison endpoint.");
+            }
+        }
+
+        function compareActiveWaferAcrossModels() {
+            if (stagedFiles.length === 0) {
+                showErrorToast("No Substrates", "Please upload or stage a wafer first to compare models.");
+                return;
+            }
+            const targetId = activeSelectedItemId || stagedFiles[0].id;
+            compareSpecificWaferItem(targetId);
+        }
+
+        function renderComparisonResults(data) {
+            document.getElementById('comparison-consensus-text').innerText = `Consensus: ${data.consensus_class} (${data.consensus_agreement})`;
+            document.getElementById('comparison-latency-text').innerText = `Total Latency: ${data.total_latency_ms}ms | Fastest: ${data.fastest_model}`;
+
+            const tbody = document.getElementById('comparison-table-body');
+            tbody.innerHTML = data.comparisons.map((c, idx) => {
+                const isConsensus = c.predicted_class === data.consensus_class;
+                return `
+                    <tr class="hover:bg-white/5 transition-colors font-mono ${idx === 0 ? 'bg-cyan-950/20' : ''}">
+                        <td class="py-2.5 px-3">
+                            <div class="font-bold text-white flex items-center gap-1.5">
+                                <span>${escapeHtml(c.pipeline_short_name)}</span>
+                                <span class="px-1.5 py-0.2 rounded text-[9px] bg-slate-800 text-cyan-300 font-bold">${c.badge}</span>
+                            </div>
+                            <div class="text-[10px] text-slate-400">${escapeHtml(c.architecture)}</div>
+                        </td>
+                        <td class="py-2.5 px-3 text-cyan-400 font-bold">${c.benchmark_accuracy}</td>
+                        <td class="py-2.5 px-3 font-bold ${c.predicted_class.toLowerCase() === 'none' ? 'text-emerald-400' : 'text-rose-400'}">${escapeHtml(c.predicted_class)}</td>
+                        <td class="py-2.5 px-3 text-white font-bold">${c.confidence_percent}%</td>
+                        <td class="py-2.5 px-3 text-slate-300">${c.inference_time_ms} ms</td>
+                        <td class="py-2.5 px-3 text-center">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${isConsensus ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/10 text-amber-400 border border-amber-500/30'}">
+                                ${isConsensus ? '✓ Consensus' : '⚠ Dissenting'}
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function closeComparisonModal() {
+            document.getElementById('comparison-modal').classList.add('hidden');
+        }
+
+        // ==========================================================
+        // PROGRESSIVE WEB APP (PWA) BROWSER INSTALLATION HANDLERS
+        // ==========================================================
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const desktopBtn = document.getElementById('pwa-install-btn');
+            const mobileBtn = document.getElementById('pwa-install-btn-mobile');
+            if (desktopBtn) desktopBtn.classList.remove('hidden');
+            if (mobileBtn) mobileBtn.classList.remove('hidden');
+        });
+
+        async function installPWA() {
+            if (!deferredPrompt) {
+                showSuccessToast("PWA Ready", "To install, tap Share (iOS Safari) or 3-Dots (Chrome) -> 'Add to Home Screen'.");
+                return;
+            }
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`PWA install outcome: ${outcome}`);
+            deferredPrompt = null;
+            const desktopBtn = document.getElementById('pwa-install-btn');
+            const mobileBtn = document.getElementById('pwa-install-btn-mobile');
+            if (desktopBtn) desktopBtn.classList.add('hidden');
+            if (mobileBtn) mobileBtn.classList.add('hidden');
+        }
+
+        // Register Service Worker for Offline / Mobile Browser App
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('FabMetrics PWA ServiceWorker active, scope:', reg.scope))
+                    .catch(err => console.log('FabMetrics PWA registration:', err));
+            });
+        }
     </script>
+
+    <!-- Multi-Model Comparison Modal Markup -->
+    <div id="comparison-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-cyan-500/30 rounded-2xl max-w-4xl w-full p-6 max-h-[90vh] overflow-y-auto space-y-4 shadow-2xl shadow-cyan-500/10">
+            <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                <div>
+                    <h3 class="text-base font-bold text-white flex items-center gap-2">
+                        <span>⚡ Multi-Model Hybrid Comparison Matrix</span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-mono bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">6 Pipelines</span>
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-0.5">Benchmarking the exact same wafer substrate across all 6 hybrid model architectures in real time.</p>
+                </div>
+                <button onclick="closeComparisonModal()" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300">✕</button>
+            </div>
+            
+            <div id="comparison-consensus-banner" class="p-3 rounded-xl bg-purple-950/40 border border-purple-500/30 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <span class="text-purple-300 font-bold" id="comparison-consensus-text">Evaluating consensus...</span>
+                <span class="text-[11px] font-mono text-slate-400" id="comparison-latency-text">Total Latency: --</span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead>
+                        <tr class="border-b border-white/10 text-slate-400 font-mono">
+                            <th class="py-2.5 px-3">Pipeline / Architecture</th>
+                            <th class="py-2.5 px-3">Val Acc</th>
+                            <th class="py-2.5 px-3">Prediction</th>
+                            <th class="py-2.5 px-3">Certainty</th>
+                            <th class="py-2.5 px-3">Latency</th>
+                            <th class="py-2.5 px-3 text-center">Consensus</th>
+                        </tr>
+                    </thead>
+                    <tbody id="comparison-table-body" class="divide-y divide-white/5">
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

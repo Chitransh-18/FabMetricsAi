@@ -13,10 +13,14 @@ from inference.config import CLASS_NAMES
 from wafer_dataset import NUM_CLASSES
 
 
-def build_model(num_classes: int = NUM_CLASSES) -> nn.Module:
+def build_model(num_classes: int = NUM_CLASSES, pretrained: bool = False) -> nn.Module:
     """Recreate the ResNet-34 backbone with a 9-class classification head."""
-    weights = ResNet34_Weights.IMAGENET1K_V1
-    model = resnet34(weights=weights)
+    weights = ResNet34_Weights.IMAGENET1K_V1 if pretrained else None
+    try:
+        model = resnet34(weights=weights)
+    except Exception:
+        # Fallback to uninitialized weights if offline or airgapped
+        model = resnet34(weights=None)
     in_features = model.fc.in_features
     model.fc = nn.Linear(in_features, num_classes)
     return model

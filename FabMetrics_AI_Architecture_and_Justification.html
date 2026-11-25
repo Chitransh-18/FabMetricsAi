@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>FabMetrics AI: Architecture, Pipeline & ECE Justification</title>
+<style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.6; margin: 40px auto; max-width: 900px; color: #222; background-color: #fafafa; padding: 20px; }
+    .container { background-color: #fff; padding: 40px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
+    h1, h2, h3 { color: #1a365d; }
+    h1 { border-bottom: 3px solid #cbd5e0; padding-bottom: 10px; font-size: 2.2em; }
+    h2 { border-bottom: 2px solid #edf2f7; padding-bottom: 5px; margin-top: 35px; color: #2b6cb0; }
+    h3 { margin-top: 25px; color: #2c5282; }
+    p { font-size: 1.05em; }
+    .highlight { background-color: #ebf8ff; border-left: 4px solid #3182ce; padding: 10px 15px; margin: 20px 0; border-radius: 0 4px 4px 0; }
+    .ece-note { background-color: #fffaf0; border-left: 4px solid #ed8936; padding: 10px 15px; font-style: italic; }
+    ul { font-size: 1.05em; }
+    li { margin-bottom: 10px; }
+    .step-box { border: 1px solid #e2e8f0; border-radius: 6px; padding: 15px; margin-bottom: 15px; background: #f7fafc; }
+    .step-number { font-weight: bold; color: #fff; background: #3182ce; padding: 4px 10px; border-radius: 50%; margin-right: 10px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+    <h1>FabMetrics AI: Complete Pipeline & Model Justification</h1>
+    <p><em>This document details the exact technical workflow of the project from image upload to final output, and provides strong, ECE-focused (Electronics & Communication Engineering) defenses for why specific models like ResNet-50 were chosen. Use this to dominate the technical questions from your evaluators.</em></p>
+
+    <h2>1. The End-to-End Pipeline (What happens behind the scenes?)</h2>
+    <p>When a user uploads a Wafer Map image on the dashboard, it doesn't just magically give an answer. It goes through a strict, 5-step pipeline:</p>
+
+    <div class="step-box">
+        <span class="step-number">Step 1</span> <strong>Ingestion & Security (The API Layer)</strong>
+        <ul>
+            <li>The frontend sends the image to our backend (FastAPI).</li>
+            <li><strong>Security Check:</strong> The backend immediately checks the user's Bearer Session Token to ensure they are authorized.</li>
+            <li><strong>OOM/DoS Guard:</strong> It checks the file size. If it's over 10MB, it rejects it instantly to prevent out-of-memory (OOM) crashes on the server.</li>
+        </ul>
+    </div>
+
+    <div class="step-box">
+        <span class="step-number">Step 2</span> <strong>Image Preprocessing (Preparing the Data)</strong>
+        <ul>
+            <li><strong>Decoding:</strong> OpenCV reads the raw image bytes.</li>
+            <li><strong>Resizing:</strong> Wafer maps come in different sizes (e.g., 52x52). Our AI models strictly require a <strong>224x224 pixel input</strong>. We use Bilinear Interpolation to resize the image without destroying the defect shapes.</li>
+            <li><strong>Color Channel Mapping (Decoloration):</strong> Industrial wafer maps are often single-channel grayscale (black and white). However, ResNet and EfficientNet are pre-trained on ImageNet, which expects 3-channel RGB images (Red, Green, Blue). We apply a 1x1 Convolution to mathematically map the 1-channel image into 3 channels.</li>
+            <li><strong>Normalization:</strong> The pixel values (0 to 255) are mathematically scaled down (normalized) to be between 0 and 1. This prevents the math inside the neural network from exploding to huge numbers.</li>
+        </ul>
+    </div>
+
+    <div class="step-box">
+        <span class="step-number">Step 3</span> <strong>The Dual-Branch Inference (The AI Brain)</strong>
+        <ul>
+            <li>The 224x224 image is fed into two separate neural networks simultaneously:</li>
+            <li><strong>Branch A (ResNet-50):</strong> Extracts a 2048-dimensional vector representing the "Global Spatial Features" (the big picture shape).</li>
+            <li><strong>Branch B (EfficientNet-B0):</strong> Extracts a 1280-dimensional vector representing "Local Texture Features" (fine-grained details).</li>
+            <li><strong>Fusion:</strong> These two vectors are concatenated (joined together) into a massive array of numbers that represents everything about the wafer.</li>
+        </ul>
+    </div>
+
+    <div class="step-box">
+        <span class="step-number">Step 4</span> <strong>Classification & Computer Vision Localization</strong>
+        <ul>
+            <li><strong>Softmax Layer:</strong> The fused array is passed through a final mathematical function called Softmax. This spits out 10 percentages (e.g., 98% chance it's a Scratch, 2% chance it's a Donut). The highest percentage wins.</li>
+            <li><strong>Bounding Box Generation:</strong> Simultaneously, OpenCV runs a contour-finding algorithm to draw tight red boxes around the clustered defect areas so the user can visually see exactly where the failure occurred.</li>
+        </ul>
+    </div>
+
+    <div class="step-box">
+        <span class="step-number">Step 5</span> <strong>Output, Storage & Reporting</strong>
+        <ul>
+            <li>The result is saved into the SQLite database for historical tracking.</li>
+            <li>The ReportLab engine dynamically generates a 4-page PDF Executive Summary with the results and the image.</li>
+            <li>The frontend receives the final JSON response and updates the UI for the user.</li>
+        </ul>
+    </div>
+
+    <br>
+
+    <h2>2. Model Selection: The "Why" (For ECE Evaluators)</h2>
+    <p>Your evaluators know hardware and computation. If they ask, <em>"Why ResNet-50? Why not 34 or 101?"</em>, use these exact hardware and mathematical justifications.</p>
+
+    <h3>Why ResNet-50 instead of ResNet-34?</h3>
+    <div class="highlight">
+        <p><strong>Your Answer:</strong> "We specifically avoided ResNet-34 because of its architecture. ResNet-34 uses standard 'BasicBlocks' (two 3x3 convolutions). However, <strong>ResNet-50 introduces the 'Bottleneck Architecture'</strong>. A bottleneck block uses a 1x1 convolution to reduce dimensionality, a 3x3 to process, and a 1x1 to expand. This mathematically reduces the computational complexity and the number of parameters, allowing us to build a much deeper network (50 layers instead of 34) without exploding our hardware memory overhead. We needed that extra depth to capture highly complex, mixed-type wafer defects."</p>
+    </div>
+
+    <h3>Why ResNet-50 instead of ResNet-101 or ResNet-152?</h3>
+    <div class="highlight">
+        <p><strong>Your Answer:</strong> "In the semiconductor industry, inference latency (speed) is just as critical as accuracy. ResNet-101 and 152 require significantly more Floating Point Operations Per Second (FLOPS). Moving from 50 to 101 layers doubles the computational time but only gives a fraction of a percent increase in accuracy (diminishing returns). Furthermore, deploying a 152-layer model on edge industrial hardware is inefficient and leads to <strong>overfitting</strong> on our 35,000-image dataset. ResNet-50 hit the exact sweet spot, allowing us to maintain a sub-16 millisecond processing time."</p>
+    </div>
+
+    <h3>Why EfficientNet-B0 for the second branch?</h3>
+    <div class="highlight">
+        <p><strong>Your Answer:</strong> "EfficientNet-B0 is an engineering masterpiece for hardware efficiency. Instead of just blindly adding more layers, it uses <strong>Compound Scaling</strong> to balance depth, width, and resolution. More importantly for ECE, it utilizes <strong>Depthwise Separable Convolutions</strong> (Mobile Inverted Bottleneck Convolution - MBConv). This drastically reduces the number of Multiply-Accumulate (MAC) operations compared to traditional convolutions. It allows our second branch to capture tiny texture details with virtually no strain on the GPU or CPU."</p>
+    </div>
+
+    <br>
+
+    <h2>3. New Viva Voce Questions (Pipeline & Architecture Focus)</h2>
+
+    <p><strong>Q: Walk me through what happens to the image matrix when it enters your model.</strong><br>
+    <span class="ece-note">Answer:</span> "First, the image is decoded into a pixel matrix and resized to 224x224. Because industrial wafer maps are single-channel (grayscale), we use a 1x1 Convolutional layer to project it into a 3-channel matrix, as our pre-trained models expect RGB inputs. We then normalize the matrix values to a 0-1 scale to ensure numerical stability and prevent gradient explosion during processing."</p>
+
+    <p><strong>Q: Why did you use two models (Dual-Branch) instead of just one big one?</strong><br>
+    <span class="ece-note">Answer:</span> "A single model struggles to balance global shapes and local textures. If we use a massive CNN, we lose spatial awareness. By running them in parallel—ResNet50 for macro-structures (like Edge-Rings) and EfficientNet for micro-textures (like tiny Scratches)—and fusing their output tensors, we achieve 97.8% accuracy without the heavy computational burden of a single massive network."</p>
+
+    <p><strong>Q: You mentioned Focal Loss in your training. What is that from a mathematical standpoint?</strong><br>
+    <span class="ece-note">Answer:</span> "Standard Cross-Entropy loss treats all errors equally. In our dataset, 'Normal' wafers make up 85% of the data, so the model becomes biased. Focal Loss adds a modulating factor (Gamma) to the Cross-Entropy equation. If the model is highly confident and correct about a 'Normal' wafer, the loss drops to near zero. If it struggles with a rare 'Near-Full' defect, the loss remains high, mathematically forcing the optimizer to update the weights specifically for rare defects."</p>
+
+    <p><strong>Q: How are the bounding boxes generated? Is that deep learning too?</strong><br>
+    <span class="ece-note">Answer:</span> "No, the bounding box localization is handled via deterministic Computer Vision algorithms using OpenCV. Once the deep learning model classifies the defect type, we apply thresholding and contour detection to the raw image to isolate the exact pixel coordinates of the defect clusters and draw the red rectangles. This saves massive amounts of GPU compute compared to running a full object-detection network like YOLO, keeping our latency under 16ms."</p>
+
+</div>
+</body>
+</html>

@@ -232,6 +232,9 @@
         document.documentElement.style.setProperty('--text-main', light ? '#1e293b' : '#f3f4f6');
         document.documentElement.style.setProperty('--text-muted', light ? '#475569' : '#94a3b8');
         document.documentElement.setAttribute('data-theme-mode', light ? 'light' : 'dark');
+        if (typeof window.showSuccessToast === 'function') {
+            window.showSuccessToast("Theme Applied", "Cleanroom console palette updated.");
+        }
     }
 
 
