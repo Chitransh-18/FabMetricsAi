@@ -14,7 +14,7 @@ WORKDIR /app
 
 # Install system packages required for OpenCV and ReportLab
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libgl1-mesa-glx \
+    libgl1 \
     libglib2.0-0 \
     libgomp1 \
     curl \
@@ -27,8 +27,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy source codebase
 COPY . .
 
-# Expose application port
+# Expose default application port
 EXPOSE 8000
 
-# Launch Uvicorn production web server
-CMD ["python", "-m", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+# Launch Uvicorn production web server with dynamic PORT binding for Render/Cloud
+CMD ["sh", "-c", "uvicorn app:app --host 0.0.0.0 --port ${PORT:-8000}"]
