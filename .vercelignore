@@ -1,11 +1,23 @@
-# Exclude large documentation, datasets, and training trial scripts from serverless bundle
-*.pdf
-WM811K_Balanced_Kaggle/
+# =========================================================================
+# Vercel Deployment Ignore File
+# =========================================================================
+# Tell Vercel to ignore Python backend files and ML dependencies.
+# This prevents Vercel from attempting to create an oversized 500MB+ serverless lambda,
+# allowing Vercel to deploy the frontend web UI in 2 seconds as a static edge app.
+# (Render does NOT use this file and will build the full Python AI container).
+
+app.py
+inference/
+requirements.txt
+Dockerfile
+keep_alive_bot.py
 trial_*.py
 train_*.py
 verify_*.py
-keep_alive_bot.py
 cache/
+fabmetrics.db
+*.pdf
+WM811K_Balanced_Kaggle/
 *.md
 .github/
 .vscode/
