@@ -1,0 +1,11 @@
+# Exclude large documentation, datasets, and training trial scripts from serverless bundle
+*.pdf
+WM811K_Balanced_Kaggle/
+trial_*.py
+train_*.py
+verify_*.py
+keep_alive_bot.py
+cache/
+*.md
+.github/
+.vscode/
