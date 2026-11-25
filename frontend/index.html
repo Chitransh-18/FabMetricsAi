@@ -829,7 +829,14 @@
 
     <!-- Script Logic Matrix -->
     <script>
-        const API_URL = 'http://127.0.0.1:8000';        
+        // Dynamic Production API URL Auto-Detection:
+        // In production (e.g. Render, custom domain), use relative path (empty string) to route to the deployed host.
+        // Fall back to http://127.0.0.1:8000 only when opening directly via file:/// or a different local port.
+        const API_URL = (window.location.protocol.startsWith('http')) 
+            ? ((window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '8000' && window.location.port !== ''
+                ? 'http://127.0.0.1:8000' 
+                : '') 
+            : 'http://127.0.0.1:8000';        
         const fileInput = document.getElementById('file-input');
         const dropZone = document.getElementById('drop-zone');
         const queueList = document.getElementById('queue-list');
